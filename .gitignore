@@ -1,1 +1,4 @@
 .env
+.vscode
+go.mod
+go.sum
