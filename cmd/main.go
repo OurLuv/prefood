@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/OurLuv/prefood/internal/config"
+	"github.com/OurLuv/prefood/internal/storage/postgres"
 	"github.com/joho/godotenv"
 	"golang.org/x/exp/slog"
 )
@@ -18,11 +19,23 @@ func initEnv() {
 }
 
 func main() {
+	//* config
 	initEnv()
 	cfg := config.MustLoad()
 	fmt.Println(cfg)
+
+	//* logger
 	log := setupLogger()
 	log.Info("Test info")
+
+	//* storage
+	storage, err := postgres.New(cfg.StoragePath)
+	if err != nil{
+		log.Error("failed to init storage", err)
+		os.Exit(1)
+	}
+	log.Info("Storage init")
+	_ = storage
 }
 
 func setupLogger() *slog.Logger {
