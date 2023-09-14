@@ -7,17 +7,14 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type Storage struct {
-	pool *pgxpool.Pool
-}
 
-func New(storagePath string) (*Storage, error){
+func NewDB(storagePath string) (*pgxpool.Pool, error){
 	dbpool, err := pgxpool.New(context.Background(), storagePath)
 	if err != nil {
 		err = fmt.Errorf("unable to create connection pool: %v", err)
 		return nil, err
 	}
-	defer dbpool.Close()
+	
 
 	var greeting string
 	err = dbpool.QueryRow(context.Background(), "select 'Hello, world from db!'").Scan(&greeting)
@@ -26,5 +23,5 @@ func New(storagePath string) (*Storage, error){
 		return nil, err
 	}
 	fmt.Println(greeting)
-	return &Storage{dbpool}, nil
+	return dbpool, nil
 }

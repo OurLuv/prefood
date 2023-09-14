@@ -23,19 +23,22 @@ func main() {
 	initEnv()
 	cfg := config.MustLoad()
 	fmt.Println(cfg)
-
+ 
 	//* logger
 	log := setupLogger()
 	log.Info("Test info")
 
 	//* storage
-	storage, err := postgres.New(cfg.StoragePath)
+	pool, err := postgres.NewDB(cfg.StoragePath)
 	if err != nil{
 		log.Error("failed to init storage", err)
 		os.Exit(1)
 	}
+	defer pool.Close()
 	log.Info("Storage init")
-	_ = storage
+
+
+	
 }
 
 func setupLogger() *slog.Logger {
