@@ -7,6 +7,16 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+type Repository struct{
+	CategoryStorage
+}
+
+func NewRepository(p *pgxpool.Pool) *Repository{
+	return &Repository{
+		NewCategoryStorage(p),
+	}
+}
+
 
 func NewDB(storagePath string) (*pgxpool.Pool, error){
 	dbpool, err := pgxpool.New(context.Background(), storagePath)

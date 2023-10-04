@@ -3,17 +3,16 @@ package postgres
 import (
 	"context"
 	"fmt"
-
 	"github.com/OurLuv/prefood/internal/model"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type CategoryStorage interface {
 	Create(c model.Сategory) error
-	GetById(c model.Сategory) (*model.Сategory, error)
-	GetAll(c model.Сategory) ([]model.Сategory, error)
-	Update(c model.Сategory) error
-	DeleteById(c model.Сategory) error
+	GetById(id uint) (*model.Сategory, error)
+	GetAll() ([]model.Сategory, error)
+	UpdateCategoryById(id uint, c model.Сategory) error
+	DeleteCategoryById(id uint) error
 }
 
 type CategoryRepository struct{
@@ -31,22 +30,52 @@ func (cr *CategoryRepository) Create(c model.Сategory) error{
 }
 
 //* Get category by id
-func (cr *CategoryRepository) GetById(c model.Сategory) (*model.Сategory, error){
-	return nil, nil
+func (cr *CategoryRepository) GetById(id uint) (*model.Сategory, error){
+	query := "SELECT id, name FROM category WHERE id = $1"
+	row := cr.pool.QueryRow(context.Background(), query, id)
+	category := &model.Сategory{}
+	err := row.Scan(&category.Id, &category.Name)
+	if err != nil {
+		return nil, err
+	}
+	
+	return category, nil
 }
-
 //* get all categories
-func (cr *CategoryRepository) GetAll(c model.Сategory) ([]model.Сategory, error){
-	return nil, nil
+func (cr *CategoryRepository) GetAll() ([]model.Сategory, error){
+	query := "SELECT * FROM category"
+	row, err := cr.pool.Query(context.Background(), query)
+	res := []model.Сategory{}
+	if err != nil{
+		return nil, err
+	}
+	category := model.Сategory{}
+	for row.Next() {
+		err := row.Scan(&category.Id, &category.Name)
+		res = append(res, category)
+		if err != nil {
+			return nil, err
+		}
+		
+	}
+	return res, nil
 }
 
 //* update category
-func (cr *CategoryRepository) Update(c model.Сategory) error{
+func (cr *CategoryRepository) UpdateCategoryById(id uint, c model.Сategory) error{
 	return nil
 }
 
 //* delete category by id
-func (cr *CategoryRepository) DeleteById(c model.Сategory) error{
+func (cr *CategoryRepository) DeleteCategoryById(id uint) error{
+	query := "delete from category where id=$1"
+	commandTag, err := cr.pool.Exec(context.Background(), query, id)
+	if err != nil{
+		return err
+	}	
+	if commandTag.RowsAffected() != 1 {
+		return fmt.Errorf("no row found to delete")
+	}
 	return nil
 }
 

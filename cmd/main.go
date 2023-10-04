@@ -3,9 +3,12 @@ package main
 import (
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/OurLuv/prefood/internal/config"
+	"github.com/OurLuv/prefood/internal/server/handler"
+	"github.com/OurLuv/prefood/internal/service"
 	"github.com/OurLuv/prefood/internal/storage/postgres"
 	"github.com/joho/godotenv"
 	"golang.org/x/exp/slog"
@@ -37,8 +40,27 @@ func main() {
 	defer pool.Close()
 	log.Info("Storage init")
 
+	//* initing repos, services & handlers
+	repos := postgres.NewRepository(pool)
+	log.Info("repos inited")
+	services := service.NewService(*repos)
+	log.Info("services inited")
+	handlers := handler.NewHandler(*services)
+	log.Info("handlers inited")
 
-	
+	//* starting server
+	router := handlers.InitRoutes()
+	srv := &http.Server{
+		Addr: cfg.Address,
+		Handler: router,
+		ReadTimeout: cfg.HttpServer.Timeout,
+		WriteTimeout: cfg.HttpServer.Timeout,
+		IdleTimeout: cfg.HttpServer.IdleTimeout,
+	}
+	log.Info("server is started")
+	if err := srv.ListenAndServe(); err != nil{
+		log.Error("failed to start a server")
+	}
 }
 
 func setupLogger() *slog.Logger {
