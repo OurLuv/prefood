@@ -8,9 +8,9 @@ import (
 	"github.com/OurLuv/prefood/internal/model"
 )
 
-func TestCreate(t *testing.T){
-	pool, err := NewDB("postgres://postgres:admin@localhost:5432/prefood")
-	if err != nil{
+func TestCreate(t *testing.T) {
+	pool, err := NewDB("postgres://postgres:password@localhost:5432/prefood")
+	if err != nil {
 		log.Fatalf("failed to init storage: %d", err)
 	}
 	defer pool.Close()
@@ -18,7 +18,7 @@ func TestCreate(t *testing.T){
 	fr := new(FoodRepository)
 	fr.pool = pool
 	category := model.Сategory{
-		Id: 30,
+		Id:   30,
 		Name: "Fruits",
 	}
 
@@ -32,8 +32,8 @@ func TestCreate(t *testing.T){
 		CreatedAt:   time.Now(),
 		Image:       "apple.jpg",
 	}
-	if err := fr.Create(food); err != nil{
+	if err := fr.Create(food); err != nil {
 		t.Errorf("can't create a model of Food: %d", err)
 	}
-	
+
 }
