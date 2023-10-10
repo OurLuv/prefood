@@ -26,14 +26,14 @@ func main() {
 	initEnv()
 	cfg := config.MustLoad()
 	fmt.Println(cfg)
- 
+
 	//* logger
 	log := setupLogger()
 	log.Info("Test info")
 
 	//* storage
 	pool, err := postgres.NewDB(cfg.StoragePath)
-	if err != nil{
+	if err != nil {
 		log.Error("failed to init storage", err)
 		os.Exit(1)
 	}
@@ -51,14 +51,14 @@ func main() {
 	//* starting server
 	router := handlers.InitRoutes()
 	srv := &http.Server{
-		Addr: cfg.Address,
-		Handler: router,
-		ReadTimeout: cfg.HttpServer.Timeout,
+		Addr:         cfg.Address,
+		Handler:      router,
+		ReadTimeout:  cfg.HttpServer.Timeout,
 		WriteTimeout: cfg.HttpServer.Timeout,
-		IdleTimeout: cfg.HttpServer.IdleTimeout,
+		IdleTimeout:  cfg.HttpServer.IdleTimeout,
 	}
 	log.Info("server is started")
-	if err := srv.ListenAndServe(); err != nil{
+	if err := srv.ListenAndServe(); err != nil {
 		log.Error("failed to start a server")
 	}
 }

@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/OurLuv/prefood/internal/model"
 	"github.com/jackc/pgx/v5"
@@ -25,8 +24,10 @@ func (fr *FoodRepository) Create(f model.Food) error {
 	ctx := context.Background()
 	var exist bool
 	//* check if category exists
-	row := fr.pool.QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM food WHERE id = $1)", f.Category.Id).Scan(&exist)
-	if row == nil {
+	if err := fr.pool.QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM category WHERE id = $1)", f.Category.Id).Scan(&exist); err != nil {
+		return err
+	}
+	if !exist {
 		//* create transaction
 		tx, err := fr.pool.BeginTx(context.Background(), pgx.TxOptions{})
 		if err != nil {
@@ -48,12 +49,17 @@ func (fr *FoodRepository) Create(f model.Food) error {
 		if err := tx.Commit(context.Background()); err != nil {
 			return err
 		}
+		return nil
 	}
 
 	_, err := fr.pool.Exec(ctx, "INSERT INTO food (name, description, category_id, price, in_stock, created_at, image) VALUES ($1, $2, $3, $4, $5, $6, $7)",
 		f.Name, f.Description, f.Category.Id, f.Price, f.InStock, f.CreatedAt, f.Image)
 	if err != nil {
-		return fmt.Errorf("failed to create a category: %s", err)
+		return err
 	}
 	return nil
+}
+
+func NewFoodRepository(p *pgxpool.Pool) *FoodRepository {
+	return &FoodRepository{pool: p}
 }

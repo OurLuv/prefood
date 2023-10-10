@@ -1,7 +1,6 @@
 package postgres
 
 import (
-	"log"
 	"testing"
 	"time"
 
@@ -9,16 +8,9 @@ import (
 )
 
 func TestCreate(t *testing.T) {
-	pool, err := NewDB("postgres://postgres:password@localhost:5432/prefood")
-	if err != nil {
-		log.Fatalf("failed to init storage: %d", err)
-	}
-	defer pool.Close()
-
-	fr := new(FoodRepository)
-	fr.pool = pool
+	fr := NewFoodRepository(pool)
 	category := model.Сategory{
-		Id:   30,
+		Id:   25,
 		Name: "Fruits",
 	}
 
@@ -33,7 +25,7 @@ func TestCreate(t *testing.T) {
 		Image:       "apple.jpg",
 	}
 	if err := fr.Create(food); err != nil {
-		t.Errorf("can't create a model of Food: %d", err)
+		t.Errorf("can't create a model of Food: %v", err)
 	}
 
 }
