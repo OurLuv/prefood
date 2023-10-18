@@ -7,24 +7,24 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type Repository struct{
+type Repository struct {
 	CategoryStorage
+	FoodStorage
 }
 
-func NewRepository(p *pgxpool.Pool) *Repository{
+func NewRepository(p *pgxpool.Pool) *Repository {
 	return &Repository{
 		NewCategoryStorage(p),
+		NewFoodRepository(p),
 	}
 }
 
-
-func NewDB(storagePath string) (*pgxpool.Pool, error){
+func NewDB(storagePath string) (*pgxpool.Pool, error) {
 	dbpool, err := pgxpool.New(context.Background(), storagePath)
 	if err != nil {
 		err = fmt.Errorf("unable to create connection pool: %v", err)
 		return nil, err
 	}
-	
 
 	var greeting string
 	err = dbpool.QueryRow(context.Background(), "select 'Hello, world from db!'").Scan(&greeting)

@@ -12,7 +12,7 @@ var pool *pgxpool.Pool
 
 func TestMain(m *testing.M) {
 	var err error
-	pool, err = NewDB("postgres://postgres:password@localhost:5432/prefood")
+	pool, err = NewDB("postgres://postgres:admin@localhost:5432/prefood")
 	if err != nil {
 		log.Fatalf("failed to init storage: %s", err)
 		os.Exit(1)

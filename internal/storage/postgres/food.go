@@ -60,6 +60,42 @@ func (fr *FoodRepository) Create(f model.Food) error {
 	return nil
 }
 
+// * Get by id
+func (fr *FoodRepository) GetById(id uint) (*model.Food, error) {
+	query := "SELECT * FROM food WHERE id=$1"
+	var food model.Food
+	row := fr.pool.QueryRow(context.Background(), query, id)
+	if err := row.Scan(&food.Id, &food.Name, &food.Description, &food.CategoryId, &food.Price, &food.InStock, &food.CreatedAt, &food.Image); err != nil {
+		return nil, err
+	}
+	return &food, nil
+}
+
+// * Get all
+func (fr *FoodRepository) GetAll() ([]model.Food, error) {
+	query := "SELECT * FROM food"
+	var f model.Food
+	var food []model.Food
+	if rows, err := fr.pool.Query(context.Background(), query); err != nil {
+		return nil, err
+	} else {
+		for rows.Next() {
+			if err := rows.Scan(&f.Id, &f.Name, &f.Description, &f.CategoryId, &f.Price, &f.InStock, &f.CreatedAt, &f.Image); err != nil {
+				return nil, err
+			}
+			food = append(food, f)
+		}
+		return food, nil
+	}
+
+}
+func (fr *FoodRepository) UpdateById(id uint, c model.Food) error {
+	return nil
+}
+func (fr *FoodRepository) DeleteById(id uint) error {
+	return nil
+}
+
 func NewFoodRepository(p *pgxpool.Pool) *FoodRepository {
 	return &FoodRepository{pool: p}
 }

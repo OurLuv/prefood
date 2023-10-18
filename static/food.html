@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entire Menu</title>
+    <style>
+        *{
+            padding: 0;
+            margin: 0;
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        }
+        .wrapper{
+            display: flex;
+            flex-wrap: wrap;
+            padding: 200px;
+        }
+        .food{
+            margin: 20px;
+            border-bottom: 1px solid black;
+            display: flex;
+            flex-direction: column;
+        }
+        .food_name{
+            margin: 10px, 0;
+            font-size: 18pt;
+        }
+        .food_info{
+            margin: 10px, 0;
+            font-size: 14pt;
+            color:rgb(95, 95, 95)
+        }
+        .food_price{
+            margin: 10px, 0;
+            margin: 0 auto;
+        }
+
+    </style>
+</head>
+<body>
+    {{ range .Food}}
+    <div class="wrapper">
+        <div class="food">
+            <div class="food_name"> {{ .Name }}</div>
+            <div class="food_info">{{ .Description }}</div>
+            <i class="food_price">{{ .Price }}</i>
+        </div>
+    </div>
+    {{ end }}
+</body>
+</html>

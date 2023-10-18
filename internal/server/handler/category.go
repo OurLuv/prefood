@@ -18,7 +18,7 @@ func (h *Handler) CreateCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.service.Create(category)
+	err = h.service.CategoryService.Create(category)
 	if err != nil {
 		http.Error(w, "Failed to create category", http.StatusInternalServerError)
 		return
@@ -36,7 +36,7 @@ func (h *Handler) GetCategoryById(w http.ResponseWriter, r *http.Request) {
 	id := uint(u64)
 	category, err := h.service.CategoryService.GetById(id)
 	if err != nil {
-		http.Error(w, "Failed to get category: " + err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Failed to get category: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 	json.NewEncoder(w).Encode(category)
@@ -63,7 +63,7 @@ func (h *Handler) UpdateCategoryById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.service.Create(category)
+	err = h.service.CategoryService.Create(category)
 	if err != nil {
 		http.Error(w, "Failed to create category", http.StatusInternalServerError)
 		return

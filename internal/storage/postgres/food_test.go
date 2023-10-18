@@ -1,16 +1,18 @@
 package postgres
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
 	"github.com/OurLuv/prefood/internal/model"
+	"github.com/jackc/pgx/v5"
 )
 
 func TestCreate(t *testing.T) {
 	fr := NewFoodRepository(pool)
 	category := model.Сategory{
-		Id:   25,
+		//Id:   25,
 		Name: "Fruits",
 	}
 
@@ -28,4 +30,16 @@ func TestCreate(t *testing.T) {
 		t.Errorf("can't create a model of Food: %v", err)
 	}
 
+}
+
+func TestGetById(t *testing.T) {
+	fr := NewFoodRepository(pool)
+	var err error
+	if _, err = fr.GetById(1); err != nil {
+		if err == pgx.ErrNoRows {
+			fmt.Println("No rows in table you asked for")
+		} else {
+			t.Error(err)
+		}
+	}
 }
