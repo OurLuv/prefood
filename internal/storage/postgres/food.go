@@ -73,18 +73,21 @@ func (fr *FoodRepository) GetById(id uint) (*model.Food, error) {
 
 // * Get all
 func (fr *FoodRepository) GetAll() ([]model.Food, error) {
-	query := "SELECT * FROM food"
+	query := "SELECT * FROM food f JOIN category c on f.category_id = c.id"
 	var f model.Food
+	var c model.Сategory
 	var food []model.Food
 	if rows, err := fr.pool.Query(context.Background(), query); err != nil {
 		return nil, err
 	} else {
 		for rows.Next() {
-			if err := rows.Scan(&f.Id, &f.Name, &f.Description, &f.CategoryId, &f.Price, &f.InStock, &f.CreatedAt, &f.Image); err != nil {
+			if err := rows.Scan(&f.Id, &f.Name, &f.Description, &f.CategoryId, &f.Price, &f.InStock, &f.CreatedAt, &f.Image, &c.Id, &c.Name); err != nil {
 				return nil, err
 			}
+			f.Category = c
 			food = append(food, f)
 		}
+
 		return food, nil
 	}
 

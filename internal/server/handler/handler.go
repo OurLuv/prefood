@@ -19,7 +19,11 @@ func (h *Handler) InitRoutes() *mux.Router {
 	r.HandleFunc("/api/category/{id}", h.UpdateCategoryById).Methods("UPDATE")
 
 	//*Food
-	r.HandleFunc("/food", h.GetAllFood).Methods("GET")
+	r.HandleFunc("/menu", h.GetAllFood).Methods("GET")
+	r.HandleFunc("/menu/item/{id}", h.GetFoodById).Methods("GET")
+	r.HandleFunc("/menu/add", h.CreateFood).Methods("POST")
+	r.HandleFunc("/menu/add", h.CreateFoodView).Methods("GET")
+
 	return r
 }
 

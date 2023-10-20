@@ -9,7 +9,7 @@ type Food struct {
 	Category    Сategory  `json:"category"`
 	Description string    `json:"description"`
 	Price       int       `json:"price"`
-	InStock     bool      `json:"in-stock"`
+	InStock     bool      `json:"in_stock"`
 	CreatedAt   time.Time `json:"time"`
 	Image       string    `json:"image"`
 }
