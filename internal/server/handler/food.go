@@ -53,7 +53,6 @@ func (h *Handler) CreateFood(w http.ResponseWriter, r *http.Request) {
 	}
 	if err := h.service.FoodService.Create(food); err != nil {
 		errStr := fmt.Sprintf("can't validate: %s", err.Error())
-
 		json.NewEncoder(w).Encode(map[string]interface{}{
 			"success": false,
 			"message": "can't create row in database: " + errStr,
@@ -72,7 +71,12 @@ func (h *Handler) CreateFoodView(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, errStr, http.StatusBadRequest)
 		return
 	}
-	if err = t.Execute(w, nil); err != nil {
+	mp := make(map[string][]model.Сategory)
+	if mp["Categories"], err = h.service.CategoryService.GetAll(); err != nil {
+		fmt.Print(err.Error())
+	}
+
+	if err = t.Execute(w, mp); err != nil {
 		errStr := fmt.Sprintf("can't load a view 02: %s", err.Error())
 		http.Error(w, errStr, http.StatusBadRequest)
 		return

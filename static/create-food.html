@@ -47,6 +47,13 @@
             <input type="text" class="name" placeholder="Name" required>
             <input type="text" class="description" placeholder="Description">
             <input type="number" class="price" placeholder="Price" required>
+            <label for="cat-select">Choose a category:</label>
+            <select id="cat-select">
+                {{ range .Categories }}
+                <option value="{{ .Id }}">{{ .Name }}</option>
+                {{ end }}
+            </select>
+
             <label>
                 <div>In-stock</div>
                 <input type="checkbox" class="in-stock" checked>
@@ -61,16 +68,17 @@
             $('.form').submit(function(e) {
                 e.preventDefault();
                 var formData = {
-                    name: $(".name").val(),
-                    description: $(".description").val(),
-                    price: parseInt($(".price").val()),
-                    in_stock: $(".in-stock").val() == 'on',
+                    "name": $(".name").val(),
+                    "description": $(".description").val(),
+                    "price": parseInt($(".price").val()),
+                    "category_id": parseInt($("#cat-select").val()),
+                    "in_stock": $(".in-stock").is(':checked'),
                 }; 
                 $.ajax({
                 type: 'POST',
                 dataType: 'json',
                 url: '/menu/add',
-                data: formData,
+                data: JSON.stringify(formData),
                 success: function(response) {
                     console.log(response)
                 }

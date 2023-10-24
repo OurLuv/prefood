@@ -1,14 +1,14 @@
 {{ template "header" .}}
 <body>
-    {{ range .Food}}
     <div class="wrapper">
+        {{ range .Food}}
         <div class="food">
             <div class="food_name"> {{ .Name }}</div>
             <div class="food_info">{{ .Category.Name }}</div>
             <div class="food_info">{{ .Description }}</div>
             <i class="food_price">{{ .Price }}</i>
         </div>
+        {{ end }}
     </div>
-    {{ end }}
 </body>
 </html>

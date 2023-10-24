@@ -17,8 +17,8 @@ type FoodServiceImpl struct {
 	repo postgres.FoodStorage
 }
 
-func (fs *FoodServiceImpl) Create(c model.Food) error {
-	return nil
+func (fs *FoodServiceImpl) Create(f model.Food) error {
+	return fs.repo.Create(f)
 }
 func (fs *FoodServiceImpl) GetById(id uint) (*model.Food, error) {
 	return nil, nil
