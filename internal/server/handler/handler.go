@@ -24,6 +24,10 @@ func (h *Handler) InitRoutes() *mux.Router {
 	r.HandleFunc("/menu/add", h.CreateFood).Methods("POST")
 	r.HandleFunc("/menu/add", h.CreateFoodView).Methods("GET")
 
+	//*Auth
+	r.HandleFunc("/login", h.login).Methods("POST")
+	r.HandleFunc("/signup", h.signup).Methods("POST")
+
 	return r
 }
 

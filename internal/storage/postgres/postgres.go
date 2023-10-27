@@ -10,12 +10,14 @@ import (
 type Repository struct {
 	CategoryStorage
 	FoodStorage
+	UserStorage
 }
 
 func NewRepository(p *pgxpool.Pool) *Repository {
 	return &Repository{
 		NewCategoryStorage(p),
 		NewFoodRepository(p),
+		NewUserRepository(p),
 	}
 }
 
