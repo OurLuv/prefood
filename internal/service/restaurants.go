@@ -22,7 +22,7 @@ func (rsi *RestaruantServiceImpl) Create(r model.Restaurant) error {
 	return nil
 }
 func (rsi *RestaruantServiceImpl) GetById(id uint, client_id uint) (*model.Restaurant, error) {
-	return nil, nil
+	return rsi.repo.GetById(id, client_id)
 }
 
 func NewRestaruantServiceImpl(repo postgres.RestaurantStorage) *RestaruantServiceImpl {

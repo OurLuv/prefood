@@ -17,6 +17,7 @@ type RestaurantRepository struct {
 	pool *pgxpool.Pool
 }
 
+// * Get all
 func (rr *RestaurantRepository) GetAll(client_id uint) ([]model.Restaurant, error) {
 	query := "SELECT * FROM restaurants WHERE client_id = $1"
 	var restaurants []model.Restaurant
@@ -45,8 +46,16 @@ func (rr *RestaurantRepository) Create(r model.Restaurant) error {
 	}
 	return nil
 }
+
+// * Get by id
 func (rr *RestaurantRepository) GetById(id uint, client_id uint) (*model.Restaurant, error) {
-	return nil, nil
+	query := "SELECT * FROM restaurants WHERE id = $1 AND client_id =$2"
+	row := rr.pool.QueryRow(context.Background(), query, id, client_id)
+	var r model.Restaurant
+	if err := row.Scan(&r.Id, &r.Name, &r.ClientId, &r.Phone, &r.Country, &r.State, &r.City, &r.Street, &r.Email, &r.CreatedAt); err != nil {
+		return nil, err
+	}
+	return &r, nil
 }
 
 func NewRestaurantRepository(pool *pgxpool.Pool) *RestaurantRepository {

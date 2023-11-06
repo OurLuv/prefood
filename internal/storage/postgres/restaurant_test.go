@@ -24,3 +24,13 @@ func TestCreateRestaurant(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+func TestGetRestaurant(t *testing.T) {
+	repo := NewRestaurantRepository(pool)
+
+	r, err := repo.GetById(1, 3)
+	if err != nil {
+		t.Error(err)
+	}
+	_ = r
+}

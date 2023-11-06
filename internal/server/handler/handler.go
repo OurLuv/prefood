@@ -21,7 +21,7 @@ func (h *Handler) InitRoutes() *mux.Router {
 	//* Restaruant
 	r.HandleFunc("/restaurants", h.userIdentity(h.GetAllRestaurants)).Methods("GET")
 	r.HandleFunc("/restaurants/add", h.CreateRestaurant).Methods("POST")
-	r.HandleFunc("/restaurants/{id}", h.GetRestaurantById).Methods("GET")
+	r.HandleFunc("/restaurants/{id}", h.restaurantAccess(h.GetRestaurantById)).Methods("GET")
 
 	//*Food
 	r.HandleFunc("/menu", h.GetAllFood).Methods("GET")
@@ -32,6 +32,7 @@ func (h *Handler) InitRoutes() *mux.Router {
 	//*Auth
 	r.HandleFunc("/login", h.login).Methods("POST")
 	r.HandleFunc("/signup", h.signup).Methods("POST")
+	r.HandleFunc("/signout", h.signout).Methods("GET")
 
 	return r
 }
