@@ -5,3 +5,7 @@ go.sum
 config
 PreFood.png
 requests
+.DS_Store
+internal/.DS_Store
+internal/server/.DS_Store
+internal/storage/.DS_Storegi

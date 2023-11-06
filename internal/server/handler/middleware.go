@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 
@@ -54,5 +55,24 @@ func (h *Handler) signup(w http.ResponseWriter, r *http.Request) {
 	if err := h.service.UserService.Create(user); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
+	}
+}
+
+// * Check for auth
+func (h *Handler) userIdentity(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		c, err := r.Cookie("token")
+		if err != nil {
+			http.Error(w, "Not authorized 1: "+err.Error(), http.StatusUnauthorized)
+			return
+		}
+		token := c.Value
+		id, err := middleware.VerifyToken(token)
+		newCtx := context.WithValue(r.Context(), "id", id)
+		if err != nil {
+			http.Error(w, "Not authorized 2", http.StatusUnauthorized)
+			return
+		}
+		next(w, r.WithContext(newCtx))
 	}
 }

@@ -6,6 +6,7 @@ type Service struct {
 	CategoryService
 	FoodService
 	UserService
+	RestaruantService
 }
 
 func NewService(repo postgres.Repository) *Service {
@@ -13,5 +14,6 @@ func NewService(repo postgres.Repository) *Service {
 		NewCategoryServiceImpl(repo.CategoryStorage),
 		NewFoodServiceImpl(repo.FoodStorage),
 		NewUserServiceImpl(repo.UserStorage),
+		NewRestaruantServiceImpl(repo.RestaurantStorage),
 	}
 }

@@ -18,6 +18,11 @@ func (h *Handler) InitRoutes() *mux.Router {
 	r.HandleFunc("/api/category/{id}", h.DeleteCategoryById).Methods("DELETE")
 	r.HandleFunc("/api/category/{id}", h.UpdateCategoryById).Methods("UPDATE")
 
+	//* Restaruant
+	r.HandleFunc("/restaurants", h.userIdentity(h.GetAllRestaurants)).Methods("GET")
+	r.HandleFunc("/restaurants/add", h.CreateRestaurant).Methods("POST")
+	r.HandleFunc("/restaurants/{id}", h.GetRestaurantById).Methods("GET")
+
 	//*Food
 	r.HandleFunc("/menu", h.GetAllFood).Methods("GET")
 	r.HandleFunc("/menu/item/{id}", h.GetFoodById).Methods("GET")
