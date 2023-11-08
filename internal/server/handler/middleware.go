@@ -60,3 +60,29 @@ func (h *Handler) restaurantAccess(next http.HandlerFunc) http.HandlerFunc {
 		next(w, r.WithContext(newCtx))
 	}
 }
+
+func (h *Handler) orderAccess(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		c, err := r.Cookie("token")
+		if err != nil {
+			http.Error(w, "Not authorized 1: "+err.Error(), http.StatusUnauthorized)
+			return
+		}
+		token := c.Value
+		client_id, err := middleware.VerifyToken(token)
+		if err != nil {
+			http.Error(w, "Not authorized 2: "+err.Error(), http.StatusUnauthorized)
+			return
+		}
+		RId := mux.Vars(r)["restaurant_id"]
+		u64, _ := strconv.ParseUint(RId, 10, 32)
+		restaurantId := uint(u64)
+		// check if client has access to this restaurant
+		_, err = h.service.RestaruantService.GetById(restaurantId, client_id)
+		if err != nil {
+			http.Error(w, "Not authorized 3: "+err.Error(), http.StatusUnauthorized)
+			return
+		}
+		next(w, r)
+	}
+}

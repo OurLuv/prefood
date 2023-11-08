@@ -34,6 +34,11 @@ func (h *Handler) InitRoutes() *mux.Router {
 	r.HandleFunc("/signup", h.signup).Methods("POST")
 	r.HandleFunc("/signout", h.signout).Methods("GET")
 
+	//*Order
+	r.HandleFunc("/restaurants/{restaurant_id}/orders", h.orderAccess(h.CreateOrder)).Methods("POST")
+	r.HandleFunc("/restaurants/{restaurant_id}/orders", h.orderAccess(h.GetAllOrders)).Methods("GET")
+	r.HandleFunc("/restaurants/{restaurant_id}/orders/{order_id}", h.orderAccess(h.GetOrderById)).Methods("GET")
+
 	return r
 }
 

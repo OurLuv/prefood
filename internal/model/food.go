@@ -12,4 +12,10 @@ type Food struct {
 	InStock     bool      `json:"in_stock"`
 	CreatedAt   time.Time `json:"time"`
 	Image       string    `json:"image"`
+	Quantity    int       `json:"quantity"`
+}
+
+type FoodOrder struct {
+	Id       uint `json:"id"`
+	Quantity int  `json:"quantity"`
 }

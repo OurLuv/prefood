@@ -12,6 +12,7 @@ type Repository struct {
 	FoodStorage
 	UserStorage
 	RestaurantStorage
+	OrderStorage
 }
 
 func NewRepository(p *pgxpool.Pool) *Repository {
@@ -20,6 +21,7 @@ func NewRepository(p *pgxpool.Pool) *Repository {
 		NewFoodRepository(p),
 		NewUserRepository(p),
 		NewRestaurantRepository(p),
+		NewOrderRepository(p),
 	}
 }
 
