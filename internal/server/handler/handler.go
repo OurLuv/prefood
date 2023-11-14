@@ -1,12 +1,25 @@
 package handler
 
 import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"strings"
+
 	"github.com/OurLuv/prefood/internal/service"
+	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
+	"golang.org/x/exp/slog"
 )
 
 type Handler struct {
 	service service.Service
+	logger  *slog.Logger
+}
+
+type Response struct {
+	Success bool   `json:"success"`
+	Error   string `json:"error,omitempty"`
 }
 
 func (h *Handler) InitRoutes() *mux.Router {
@@ -42,8 +55,43 @@ func (h *Handler) InitRoutes() *mux.Router {
 	return r
 }
 
-func NewHandler(s service.Service) *Handler {
+func NewHandler(s service.Service, l *slog.Logger) *Handler {
 	return &Handler{
 		service: s,
+		logger:  l,
+	}
+}
+
+func SendError(w http.ResponseWriter, errorStr string, code int) {
+	w.WriteHeader(code)
+	response := Response{
+		false,
+		errorStr,
+	}
+	json.NewEncoder(w).Encode(response)
+}
+
+func SendRespError(w http.ResponseWriter, resp Response, code int) {
+	w.WriteHeader(code)
+	json.NewEncoder(w).Encode(resp)
+}
+
+func ValidateError(errs validator.ValidationErrors) Response {
+	var msgs []string
+	for _, err := range errs {
+		switch err.ActualTag() {
+		case "required":
+			msgs = append(msgs, fmt.Sprintf("field %s is a required field", err.Field()))
+		case "email":
+			msgs = append(msgs, fmt.Sprintf("field %s has to be an email", err.Field()))
+		case "max":
+			msgs = append(msgs, fmt.Sprintf("field %s is wrong length", err.Field()))
+		default:
+			msgs = append(msgs, fmt.Sprintf("field %s is not valid", err.Field()))
+		}
+	}
+	return Response{
+		Success: false,
+		Error:   strings.Join(msgs, "; "),
 	}
 }

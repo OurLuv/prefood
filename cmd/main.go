@@ -45,7 +45,7 @@ func main() {
 	log.Info("repos inited")
 	services := service.NewService(*repos)
 	log.Info("services inited")
-	handlers := handler.NewHandler(*services)
+	handlers := handler.NewHandler(*services, log)
 	log.Info("handlers inited")
 
 	//* starting server
