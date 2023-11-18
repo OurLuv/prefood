@@ -19,6 +19,7 @@ type Handler struct {
 
 type Response struct {
 	Success bool   `json:"success"`
+	Message string `json:"message,omitempty"`
 	Error   string `json:"error,omitempty"`
 }
 
@@ -33,8 +34,11 @@ func (h *Handler) InitRoutes() *mux.Router {
 
 	//* Restaruant
 	r.HandleFunc("/restaurants", h.userIdentity(h.GetAllRestaurants)).Methods("GET")
-	r.HandleFunc("/restaurants/add", h.CreateRestaurant).Methods("POST")
+	r.HandleFunc("/restaurants/add", h.userIdentity(h.CreateRestaurant)).Methods("POST")
 	r.HandleFunc("/restaurants/{id}", h.restaurantAccess(h.GetRestaurantById)).Methods("GET")
+	r.HandleFunc("/restaurants/{id}", h.restaurantAccess(h.DeleteRestaurant)).Methods("DELETE")
+	r.HandleFunc("/restaurants/{id}/openclose", h.restaurantAccess(h.OpenClose)).Methods("POST")
+	r.HandleFunc("/restaurants/{id}", h.restaurantAccess(h.UpdateRestaurant)).Methods("PUT")
 
 	//*Food
 	r.HandleFunc("/menu", h.GetAllFood).Methods("GET")
@@ -65,8 +69,8 @@ func NewHandler(s service.Service, l *slog.Logger) *Handler {
 func SendError(w http.ResponseWriter, errorStr string, code int) {
 	w.WriteHeader(code)
 	response := Response{
-		false,
-		errorStr,
+		Success: false,
+		Error:   errorStr,
 	}
 	json.NewEncoder(w).Encode(response)
 }
