@@ -12,6 +12,7 @@ import (
 
 // * Login
 func (h *Handler) login(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	// getting data from request
 	data := struct {
 		Email    string `json:"email" validate:"required,email,max=255"`
@@ -64,7 +65,7 @@ func (h *Handler) login(w http.ResponseWriter, r *http.Request) {
 
 // * Signup
 func (h *Handler) signup(w http.ResponseWriter, r *http.Request) {
-
+	w.Header().Set("Content-Type", "application/json")
 	// getting user
 	user := model.User{}
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {

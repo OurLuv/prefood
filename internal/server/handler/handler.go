@@ -41,10 +41,14 @@ func (h *Handler) InitRoutes() *mux.Router {
 	r.HandleFunc("/restaurants/{id}", h.restaurantAccess(h.UpdateRestaurant)).Methods("PUT")
 
 	//*Food
-	r.HandleFunc("/menu", h.GetAllFood).Methods("GET")
-	r.HandleFunc("/menu/item/{id}", h.GetFoodById).Methods("GET")
-	r.HandleFunc("/menu/add", h.CreateFood).Methods("POST")
-	r.HandleFunc("/menu/add", h.CreateFoodView).Methods("GET")
+	// todo: if restaurant doesn't exist - 404
+	r.HandleFunc("/restaurants/{restaurant_id}/menu", h.GetAllFood).Methods("GET")
+	// todo: if food doesn't exist - 404
+	r.HandleFunc("/restaurants/{restaurant_id}/menu/{id}", h.GetFoodById).Methods("GET")
+	r.HandleFunc("/restaurants/{restaurant_id}/menu/add", h.restaurantAccess(h.CreateFood)).Methods("POST")
+	// todo: if 0 rows werer Update - particular message
+	r.HandleFunc("/restaurants/{restaurant_id}/menu/{id}", h.restaurantAccess(h.UpdateFood)).Methods("PUT")
+	//r.HandleFunc("/menu/add", h.CreateFoodView).Methods("GET")
 
 	//*Auth
 	r.HandleFunc("/login", h.login).Methods("POST")

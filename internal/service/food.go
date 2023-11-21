@@ -5,14 +5,6 @@ import (
 	"github.com/OurLuv/prefood/internal/storage/postgres"
 )
 
-type FoodService interface {
-	Create(c model.Food) error
-	GetById(id uint) (*model.Food, error)
-	GetAll() ([]model.Food, error)
-	UpdateById(id uint, c model.Food) error
-	DeleteById(id uint) error
-}
-
 type FoodServiceImpl struct {
 	repo postgres.FoodStorage
 }
@@ -20,14 +12,14 @@ type FoodServiceImpl struct {
 func (fs *FoodServiceImpl) Create(f model.Food) error {
 	return fs.repo.Create(f)
 }
-func (fs *FoodServiceImpl) GetById(id uint) (*model.Food, error) {
-	return nil, nil
+func (fs *FoodServiceImpl) GetById(restaurantId uint, id uint) (*model.Food, error) {
+	return fs.repo.GetById(restaurantId, id)
 }
-func (fs *FoodServiceImpl) GetAll() ([]model.Food, error) {
-	return fs.repo.GetAll()
+func (fs *FoodServiceImpl) GetAll(id uint) ([]model.Food, error) {
+	return fs.repo.GetAll(id)
 }
-func (fs *FoodServiceImpl) UpdateById(id uint, c model.Food) error {
-	return nil
+func (fs *FoodServiceImpl) UpdateById(c model.Food) error {
+	return fs.repo.UpdateById(c)
 }
 func (fs *FoodServiceImpl) DeleteById(id uint) error {
 	return nil

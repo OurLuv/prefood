@@ -12,18 +12,21 @@ import (
 // * Check for auth
 func (h *Handler) userIdentity(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
 		c, err := r.Cookie("token")
 		if err != nil {
-			http.Error(w, "Not authorized 1: "+err.Error(), http.StatusUnauthorized)
+			h.logger.Error("can't get cookie: ", err)
+			SendError(w, "Not authorized", http.StatusUnauthorized)
 			return
 		}
 		token := c.Value
 		id, err := middleware.VerifyToken(token)
-		newCtx := context.WithValue(r.Context(), "id", id)
 		if err != nil {
-			http.Error(w, "Not authorized 2", http.StatusUnauthorized)
+			h.logger.Error("verifying error", err)
+			SendError(w, "Not authorized", http.StatusMethodNotAllowed)
 			return
 		}
+		newCtx := context.WithValue(r.Context(), "id", id)
 		next(w, r.WithContext(newCtx))
 	}
 }
@@ -31,47 +34,50 @@ func (h *Handler) userIdentity(next http.HandlerFunc) http.HandlerFunc {
 // * Check for restautants
 func (h *Handler) restaurantAccess(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
 		c, err := r.Cookie("token")
 		if err != nil {
-			http.Error(w, "Not authorized 1: "+err.Error(), http.StatusUnauthorized)
+			h.logger.Error("can't get cookie: ", err)
+			SendError(w, "Not authorized", http.StatusUnauthorized)
 			return
 		}
 		token := c.Value
 		client_id, err := middleware.VerifyToken(token)
 		if err != nil {
-			http.Error(w, "Not authorized 1: "+err.Error(), http.StatusUnauthorized)
+			h.logger.Error("verifying error", err)
+			SendError(w, "Not authorized", http.StatusMethodNotAllowed)
 			return
 		}
 
-		RId := mux.Vars(r)["id"]
+		RId := mux.Vars(r)["restaurant_id"]
 		u64, _ := strconv.ParseUint(RId, 10, 32)
 		restaurantId := uint(u64)
 
 		restaurant, err := h.service.RestaruantService.GetById(restaurantId, client_id)
 		if err != nil {
-			http.Error(w, "Not authorized 3: "+err.Error(), http.StatusUnauthorized)
+			h.logger.Error("can't get restaurant", err)
+			SendError(w, "Not allowed", http.StatusMethodNotAllowed)
 			return
 		}
 		newCtx := context.WithValue(r.Context(), "restaurant", restaurant)
-		if err != nil {
-			http.Error(w, "Not authorized 2", http.StatusUnauthorized)
-			return
-		}
 		next(w, r.WithContext(newCtx))
 	}
 }
 
 func (h *Handler) orderAccess(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
 		c, err := r.Cookie("token")
 		if err != nil {
-			http.Error(w, "Not authorized 1: "+err.Error(), http.StatusUnauthorized)
+			h.logger.Error("can't get cookie: ", err)
+			SendError(w, "Not authorized", http.StatusUnauthorized)
 			return
 		}
 		token := c.Value
 		client_id, err := middleware.VerifyToken(token)
 		if err != nil {
-			http.Error(w, "Not authorized 2: "+err.Error(), http.StatusUnauthorized)
+			h.logger.Error("verifying error", err)
+			SendError(w, "Not authorized", http.StatusMethodNotAllowed)
 			return
 		}
 		RId := mux.Vars(r)["restaurant_id"]
@@ -80,7 +86,8 @@ func (h *Handler) orderAccess(next http.HandlerFunc) http.HandlerFunc {
 		// check if client has access to this restaurant
 		_, err = h.service.RestaruantService.GetById(restaurantId, client_id)
 		if err != nil {
-			http.Error(w, "Not authorized 3: "+err.Error(), http.StatusUnauthorized)
+			h.logger.Error("can't get restaurant", err)
+			SendError(w, "Not allowed", http.StatusMethodNotAllowed)
 			return
 		}
 		next(w, r)

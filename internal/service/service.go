@@ -5,7 +5,15 @@ import (
 	"github.com/OurLuv/prefood/internal/storage/postgres"
 )
 
-//go:generate mockgen -source=service.go -destination=mocks/mock.go 
+//go:generate mockgen -source=service.go -destination=mocks/mock.go
+
+type FoodService interface {
+	Create(c model.Food) error
+	GetById(restaurantId uint, id uint) (*model.Food, error)
+	GetAll(id uint) ([]model.Food, error)
+	UpdateById(c model.Food) error
+	DeleteById(id uint) error
+}
 
 type UserService interface {
 	Create(u model.User) error

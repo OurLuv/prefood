@@ -11,6 +11,101 @@ import (
 	gomock "github.com/golang/mock/gomock"
 )
 
+// MockFoodService is a mock of FoodService interface.
+type MockFoodService struct {
+	ctrl     *gomock.Controller
+	recorder *MockFoodServiceMockRecorder
+}
+
+// MockFoodServiceMockRecorder is the mock recorder for MockFoodService.
+type MockFoodServiceMockRecorder struct {
+	mock *MockFoodService
+}
+
+// NewMockFoodService creates a new mock instance.
+func NewMockFoodService(ctrl *gomock.Controller) *MockFoodService {
+	mock := &MockFoodService{ctrl: ctrl}
+	mock.recorder = &MockFoodServiceMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockFoodService) EXPECT() *MockFoodServiceMockRecorder {
+	return m.recorder
+}
+
+// Create mocks base method.
+func (m *MockFoodService) Create(c model.Food) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Create", c)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Create indicates an expected call of Create.
+func (mr *MockFoodServiceMockRecorder) Create(c interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockFoodService)(nil).Create), c)
+}
+
+// DeleteById mocks base method.
+func (m *MockFoodService) DeleteById(id uint) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteById", id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteById indicates an expected call of DeleteById.
+func (mr *MockFoodServiceMockRecorder) DeleteById(id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteById", reflect.TypeOf((*MockFoodService)(nil).DeleteById), id)
+}
+
+// GetAll mocks base method.
+func (m *MockFoodService) GetAll(id uint) ([]model.Food, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAll", id)
+	ret0, _ := ret[0].([]model.Food)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetAll indicates an expected call of GetAll.
+func (mr *MockFoodServiceMockRecorder) GetAll(id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAll", reflect.TypeOf((*MockFoodService)(nil).GetAll), id)
+}
+
+// GetById mocks base method.
+func (m *MockFoodService) GetById(restaurantId, id uint) (*model.Food, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetById", restaurantId, id)
+	ret0, _ := ret[0].(*model.Food)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetById indicates an expected call of GetById.
+func (mr *MockFoodServiceMockRecorder) GetById(restaurantId, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetById", reflect.TypeOf((*MockFoodService)(nil).GetById), restaurantId, id)
+}
+
+// UpdateById mocks base method.
+func (m *MockFoodService) UpdateById(c model.Food) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateById", c)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateById indicates an expected call of UpdateById.
+func (mr *MockFoodServiceMockRecorder) UpdateById(c interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateById", reflect.TypeOf((*MockFoodService)(nil).UpdateById), c)
+}
+
 // MockUserService is a mock of UserService interface.
 type MockUserService struct {
 	ctrl     *gomock.Controller
@@ -101,7 +196,7 @@ func (m *MockUserService) UpdateById(id uint, c model.User) error {
 }
 
 // UpdateById indicates an expected call of UpdateById.
-func (mr *MockUserServiceMockRecorder) UpdateById(id, c interface{}) *gomock.Call {
+func (mr *MockUserServiceMockRecorder) UpdateById(id uint, c interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateById", reflect.TypeOf((*MockUserService)(nil).UpdateById), id, c)
 }
