@@ -83,6 +83,7 @@ func (h *Handler) orderAccess(next http.HandlerFunc) http.HandlerFunc {
 		RId := mux.Vars(r)["restaurant_id"]
 		u64, _ := strconv.ParseUint(RId, 10, 32)
 		restaurantId := uint(u64)
+		ctx := context.WithValue(r.Context(), "id", restaurantId)
 		// check if client has access to this restaurant
 		_, err = h.service.RestaruantService.GetById(restaurantId, client_id)
 		if err != nil {
@@ -90,6 +91,6 @@ func (h *Handler) orderAccess(next http.HandlerFunc) http.HandlerFunc {
 			SendError(w, "Not allowed", http.StatusMethodNotAllowed)
 			return
 		}
-		next(w, r)
+		next(w, r.WithContext(ctx))
 	}
 }

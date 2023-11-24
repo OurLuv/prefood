@@ -59,6 +59,8 @@ func (h *Handler) InitRoutes() *mux.Router {
 	r.HandleFunc("/restaurants/{restaurant_id}/orders", h.orderAccess(h.CreateOrder)).Methods("POST")
 	r.HandleFunc("/restaurants/{restaurant_id}/orders", h.orderAccess(h.GetAllOrders)).Methods("GET")
 	r.HandleFunc("/restaurants/{restaurant_id}/orders/{order_id}", h.orderAccess(h.GetOrderById)).Methods("GET")
+	r.HandleFunc("/restaurants/{restaurant_id}/orders/{order_id}", h.orderAccess(h.DeleteOrderById)).Methods("DELETE")
+	r.HandleFunc("/restaurants/{restaurant_id}/orders/{order_id}", h.orderAccess(h.ChangeOrderStatus)).Methods("POST")
 
 	return r
 }

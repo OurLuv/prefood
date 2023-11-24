@@ -19,3 +19,8 @@ type Order struct {
 	Ordered      time.Time `json:"ordered"`
 	Arrive       time.Time `json:"arrive"`
 }
+
+type FoodOrder struct {
+	Id       uint `json:"id"`
+	Quantity int  `json:"quantity"`
+}

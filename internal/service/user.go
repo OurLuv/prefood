@@ -39,6 +39,9 @@ func (us *UserServiceImpl) UpdateById(id uint, c model.User) error {
 func (us *UserServiceImpl) DeleteById(id uint) error {
 	return nil
 }
+func (us *UserServiceImpl) CheckForEmail(email string) error {
+	return us.repo.CheckForEmail(email)
+}
 
 func NewUserServiceImpl(repo postgres.UserStorage) *UserServiceImpl {
 	return &UserServiceImpl{

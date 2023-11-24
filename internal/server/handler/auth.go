@@ -80,6 +80,15 @@ func (h *Handler) signup(w http.ResponseWriter, r *http.Request) {
 		SendRespError(w, resp, 400)
 		return
 	}
+	if err := h.service.UserService.CheckForEmail(user.Email); err != nil {
+		if err.Error() == "this email is already in use" {
+			SendError(w, "this email is already in use", http.StatusBadRequest)
+			return
+		}
+		h.logger.Error("can't check for an email", err)
+		SendError(w, "Internal error", http.StatusInternalServerError)
+		return
+	}
 
 	// creating user
 	if err := h.service.UserService.Create(user); err != nil {

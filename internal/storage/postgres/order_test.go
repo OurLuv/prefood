@@ -12,15 +12,14 @@ func TestCreateOrder(t *testing.T) {
 	order := model.Order{
 		RestaurantId: 3,
 		FoodOrder: []model.FoodOrder{
-			{Id: 1, Quantity: 1},
-			{Id: 3, Quantity: 3},
+			{Id: 4, Quantity: 1},
+			{Id: 2, Quantity: 2},
 		},
 		Name:     "john doe",
 		Phone:    "1234567890",
-		Total:    670,
 		Status:   "delivered",
 		Channel:  "mobile app",
-		Additive: "no cheese",
+		Additive: "",
 		Discount: 0,
 		Ordered:  time.Now(),
 		Arrive:   time.Now().Add(time.Minute * 30),

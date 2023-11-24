@@ -21,6 +21,7 @@ type UserService interface {
 	Login(email string, password string) (*model.User, error)
 	UpdateById(id uint, c model.User) error
 	DeleteById(id uint) error
+	CheckForEmail(email string) error
 }
 
 type Service struct {

@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"errors"
 
 	"github.com/OurLuv/prefood/internal/model"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -13,6 +14,7 @@ type UserStorage interface {
 	Login(email string) (*model.User, error)
 	UpdateById(id uint, c model.User) error
 	DeleteById(id uint) error
+	CheckForEmail(email string) error
 }
 
 type UserRepository struct {
@@ -54,6 +56,20 @@ func (ur *UserRepository) UpdateById(id uint, c model.User) error {
 	return nil
 }
 func (ur *UserRepository) DeleteById(id uint) error {
+	return nil
+}
+
+func (ur *UserRepository) CheckForEmail(email string) error {
+	query := "SELECT COUNT(*) FROM users WHERE email = $1"
+	var count int
+	row := ur.pool.QueryRow(context.Background(), query, email)
+	err := row.Scan(&count)
+	if err != nil {
+		return err
+	}
+	if count > 0 {
+		return errors.New("this email is already in use")
+	}
 	return nil
 }
 

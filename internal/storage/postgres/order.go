@@ -12,6 +12,8 @@ type OrderStorage interface {
 	Create(order model.Order) error
 	GetAll(restaurantId uint) ([]model.Order, error)
 	GetById(restaurantId uint, order_Id uint) (*model.Order, error)
+	Delete(id uint) error
+	ChangeStatus(id uint, status string) (string, error)
 }
 
 type OrderRepository struct {
@@ -29,19 +31,35 @@ func (or *OrderRepository) Create(order model.Order) error {
 	defer func() {
 		_ = tx.Rollback(context.Background())
 	}()
-	row := or.pool.QueryRow(ctx, "INSERT INTO orders"+
-		"(restaurant_id, name, phone, total, discount, status, channel, additive, ordered, arrive)"+
-		"VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id",
-		order.RestaurantId, order.Name, order.Phone, order.Total, order.Discount, order.Status, order.Channel, order.Additive, order.Ordered, order.Arrive)
+
+	// add row to orders
+	row := or.pool.QueryRow(ctx, "INSERT INTO orders "+
+		"(restaurant_id, name, phone, discount, channel, additive, ordered, arrive) "+
+		"VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id",
+		order.RestaurantId, order.Name, order.Phone, order.Discount, order.Status, order.Channel, order.Additive, order.Ordered, order.Arrive)
 
 	if err := row.Scan(&order_id); err != nil {
 		return err
 	}
+
+	// add rows to order_food
 	for f := range order.FoodOrder {
 		if _, err := or.pool.Exec(ctx, "INSERT INTO order_food"+
 			"(order_id, food_id, quantity) VALUES ($1, $2, $3)", order_id, order.FoodOrder[f].Id, order.FoodOrder[f].Quantity); err != nil {
 			return err
 		}
+	}
+
+	// set total for order
+	if _, err := or.pool.Exec(ctx, "UPDATE orders "+
+		"SET total = ( "+
+		"	SELECT SUM(of.quantity * f.price) "+
+		"	FROM order_food AS of "+
+		"	JOIN food AS f ON of.food_id = f.id "+
+		"	WHERE of.order_id = $1 "+
+		") "+
+		"WHERE orders.id = $1;", order_id); err != nil {
+		return err
 	}
 	if err := tx.Commit(ctx); err != nil {
 		return err
@@ -123,6 +141,21 @@ func (or *OrderRepository) GetById(restaurantId uint, orderId uint) (*model.Orde
 		order.FoodOrder = append(order.FoodOrder, foodOrder)
 	}
 	return &order, nil
+}
+
+func (or *OrderRepository) Delete(id uint) error {
+	query := "DELETE FROM orders WHERE id = $1"
+	if _, err := or.pool.Exec(context.Background(), query, id); err != nil {
+		return err
+	}
+	return nil
+}
+func (or *OrderRepository) ChangeStatus(id uint, status string) (string, error) {
+	query := "UPDATE orders SET status = $1 WHERE id = $2"
+	if _, err := or.pool.Exec(context.Background(), query, status, id); err != nil {
+		return "", err
+	}
+	return status, nil
 }
 
 func NewOrderRepository(pool *pgxpool.Pool) *OrderRepository {

@@ -14,8 +14,3 @@ type Food struct {
 	CreatedAt    time.Time `json:"time"`
 	Image        string    `json:"image"`
 }
-
-type FoodOrder struct {
-	Id       uint `json:"id"`
-	Quantity int  `json:"quantity"`
-}

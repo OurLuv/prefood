@@ -9,6 +9,8 @@ type OrderService interface {
 	Create(order model.Order) error
 	GetAll(restaurant_id uint) ([]model.Order, error)
 	GetById(restaurantId uint, order_Id uint) (*model.Order, error)
+	Delete(id uint) error
+	ChangeStatus(id uint, status string) (string, error)
 }
 
 type OrderServiceImpl struct {
@@ -24,6 +26,13 @@ func (os *OrderServiceImpl) GetAll(restaurant_id uint) ([]model.Order, error) {
 }
 func (os *OrderServiceImpl) GetById(restaurantId uint, orderId uint) (*model.Order, error) {
 	return os.repo.GetById(restaurantId, orderId)
+}
+
+func (os *OrderServiceImpl) Delete(id uint) error {
+	return os.repo.Delete(id)
+}
+func (os *OrderServiceImpl) ChangeStatus(id uint, status string) (string, error) {
+	return os.repo.ChangeStatus(id, status)
 }
 
 func NewOrderServiceImpl(repo postgres.OrderStorage) *OrderServiceImpl {

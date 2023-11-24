@@ -141,6 +141,7 @@ func (h *Handler) GetRestaurantById(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(&resp)
 }
 
+// * Delete
 func (h *Handler) DeleteRestaurant(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	restaurant, ok := r.Context().Value("restaurant").(*model.Restaurant)
