@@ -2,6 +2,8 @@ package handler
 
 import (
 	"bytes"
+	"context"
+	"mime/multipart"
 	"net/http/httptest"
 	"testing"
 
@@ -25,10 +27,10 @@ func TestHandler__CreateFood(t *testing.T) {
 	}{
 		{
 			name:      "OK",
-			inputBody: `{ "name": "Chicken with rice", "price":299 }`,
-			inputFood: model.Food{Name: "Chicken with rice", Price: 299},
+			inputBody: `{ "name": "Chicken with rice", "price":299}`,
+			inputFood: model.Food{Name: "Chicken with rice", RestaurantId: 1, Price: 299, Image: "png"},
 			mockBehavior: func(s *mock_service.MockFoodService, data model.Food) {
-				s.EXPECT().Create(data).Return(nil)
+				s.EXPECT().Create(data).Return(&model.Food{Name: "Chicken with rice", Price: 299, Image: "sdfsd.png"}, nil)
 			},
 			ExpectedStatusCode: 200,
 		},
@@ -47,17 +49,35 @@ func TestHandler__CreateFood(t *testing.T) {
 			}
 			handler := NewHandler(services, setupLogger())
 
+			var buf bytes.Buffer
+			w := multipart.NewWriter(&buf)
+			fw, err := w.CreateFormField("food")
+			if err != nil {
+				t.Fatal(err)
+			}
+			fw.Write([]byte(tc.inputBody))
+			_, err = w.CreateFormFile("image", "file.png")
+			if err != nil {
+				t.Fatal(err)
+			}
+			// if _, err := io.Copy(fw, file); err != nil {
+			// 	t.Fatal(err)
+			// }
+			w.Close()
 			// router
 			r := mux.NewRouter()
 			r.HandleFunc("/restaurants/{restaurant_id}/menu/add", handler.CreateFood).Methods("POST")
 
 			// sending request
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("POST", "/restaurants/{restaurant_id}/menu/add", bytes.NewBufferString(tc.inputBody))
-			r.ServeHTTP(w, req)
+			rr := httptest.NewRecorder()
+			req := httptest.NewRequest("POST", "/restaurants/{restaurant_id}/menu/add", &buf)
+			req.Header.Set("Content-Type", w.FormDataContentType())
+			newCtx := context.WithValue(req.Context(), "restaurant", &model.Restaurant{Id: 1})
+
+			r.ServeHTTP(rr, req.WithContext(newCtx))
 
 			// assert
-			assert.Equal(t, tc.ExpectedStatusCode, w.Code)
+			assert.Equal(t, tc.ExpectedStatusCode, rr.Code)
 			//assert.Equal(t, tc.ExpectedResult.InStock, w.Code)
 		})
 	}

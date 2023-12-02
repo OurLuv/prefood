@@ -35,11 +35,12 @@ func (m *MockFoodService) EXPECT() *MockFoodServiceMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockFoodService) Create(c model.Food) error {
+func (m *MockFoodService) Create(c model.Food) (*model.Food, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", c)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(*model.Food)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // Create indicates an expected call of Create.
@@ -129,6 +130,20 @@ func (m *MockUserService) EXPECT() *MockUserServiceMockRecorder {
 	return m.recorder
 }
 
+// CheckForEmail mocks base method.
+func (m *MockUserService) CheckForEmail(email string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CheckForEmail", email)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CheckForEmail indicates an expected call of CheckForEmail.
+func (mr *MockUserServiceMockRecorder) CheckForEmail(email interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckForEmail", reflect.TypeOf((*MockUserService)(nil).CheckForEmail), email)
+}
+
 // Create mocks base method.
 func (m *MockUserService) Create(u model.User) error {
 	m.ctrl.T.Helper()
@@ -196,7 +211,7 @@ func (m *MockUserService) UpdateById(id uint, c model.User) error {
 }
 
 // UpdateById indicates an expected call of UpdateById.
-func (mr *MockUserServiceMockRecorder) UpdateById(id uint, c interface{}) *gomock.Call {
+func (mr *MockUserServiceMockRecorder) UpdateById(id, c interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateById", reflect.TypeOf((*MockUserService)(nil).UpdateById), id, c)
 }

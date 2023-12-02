@@ -8,7 +8,7 @@ import (
 //go:generate mockgen -source=service.go -destination=mocks/mock.go
 
 type FoodService interface {
-	Create(c model.Food) error
+	Create(c model.Food) (*model.Food, error)
 	GetById(restaurantId uint, id uint) (*model.Food, error)
 	GetAll(id uint) ([]model.Food, error)
 	UpdateById(c model.Food) error

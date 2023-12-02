@@ -4,8 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"io"
 	"net/http"
+	"os"
 	"strconv"
+	"strings"
 
 	"github.com/OurLuv/prefood/internal/model"
 	"github.com/go-playground/validator/v10"
@@ -74,14 +77,32 @@ func (h *Handler) GetFoodById(w http.ResponseWriter, r *http.Request) {
 
 // * Create food
 func (h *Handler) CreateFood(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 	var food model.Food
+	var err error
+
+	err = r.ParseMultipartForm(10 << 20)
+	if err != nil {
+		h.logger.Error("can't parse form", err)
+		SendError(w, "Bad request", http.StatusBadRequest)
+		return
+	}
+
 	// getting data from request
-	if err := json.NewDecoder(r.Body).Decode(&food); err != nil {
+	jsonData := r.FormValue("food")
+	if err := json.Unmarshal([]byte(jsonData), &food); err != nil {
 		h.logger.Error("can't get data from request", err)
 		SendError(w, "There is no data", http.StatusBadRequest)
 		return
 	}
+	file, header, err := r.FormFile("image")
+	if err != nil {
+		h.logger.Error("can't upload image", err)
+		SendError(w, "Error with uploading an image", http.StatusBadRequest)
+		return
+	}
+	imgName := strings.Split(header.Filename, ".")
+	imgType := imgName[len(imgName)-1]
+	food.Image = imgType
 
 	// setting restaurant id from context
 	restaurant, ok := r.Context().Value("restaurant").(*model.Restaurant)
@@ -99,14 +120,45 @@ func (h *Handler) CreateFood(w http.ResponseWriter, r *http.Request) {
 		SendRespError(w, resp, 400)
 		return
 	}
+	if food.Image != "jpg" && food.Image != "png" && food.Image != "jpeg" {
+		SendError(w, "Image has to be jpg/jpeg or png", http.StatusBadRequest)
+		return
+	}
 
 	// creating food
-	if err := h.service.FoodService.Create(food); err != nil {
+	f, err := h.service.FoodService.Create(food)
+	if err != nil {
 		h.logger.Error("can't create food", err)
 		SendError(w, "Internal error", http.StatusInternalServerError)
 		return
 	}
-	resp := Response{Success: true, Message: "Row is added to database"}
+	//downloading image on server
+	fileContent, err := io.ReadAll(file)
+	if err != nil {
+		h.logger.Error("can't read a file", err)
+		SendError(w, "Internal error", http.StatusInternalServerError)
+		return
+	}
+	newFile, err := os.Create("static/images/" + f.Image)
+	if err != nil {
+		h.logger.Error("can't create a file", err)
+		SendError(w, "Internal error", http.StatusInternalServerError)
+		return
+	}
+	defer newFile.Close()
+
+	_, err = newFile.Write(fileContent)
+	if err != nil {
+		h.logger.Error("can't add a content to the file", err)
+		SendError(w, "Internal error", http.StatusInternalServerError)
+		return
+	}
+
+	// sending response
+	resp := FoodResponse{
+		Response: Response{Success: true, Message: "Row is added to database"},
+		Food:     f,
+	}
 	json.NewEncoder(w).Encode(resp)
 }
 
@@ -133,9 +185,9 @@ func (h *Handler) UpdateFood(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// creating food
+	// updating food
 	if err := h.service.FoodService.UpdateById(food); err != nil {
-		h.logger.Error("can't create food", err)
+		h.logger.Error("can't update food", err)
 		SendError(w, "Internal error", http.StatusInternalServerError)
 		return
 	}

@@ -10,7 +10,7 @@ import (
 )
 
 type FoodStorage interface {
-	Create(f model.Food) error
+	Create(f model.Food) (*model.Food, error)
 	GetById(restaurantId uint, id uint) (*model.Food, error)
 	GetAll(id uint) ([]model.Food, error)
 	UpdateById(c model.Food) error
@@ -22,44 +22,51 @@ type FoodRepository struct {
 }
 
 // * Create
-func (fr *FoodRepository) Create(f model.Food) error {
+func (fr *FoodRepository) Create(f model.Food) (*model.Food, error) {
 	ctx := context.Background()
 	var exist bool
 	//* check if category exists
 	if err := fr.pool.QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM category WHERE id = $1)", f.Category.Id).Scan(&exist); err != nil {
-		return err
+		return nil, err
 	}
 	if !exist {
 		//* create transaction
 		tx, err := fr.pool.BeginTx(context.Background(), pgx.TxOptions{})
 		if err != nil {
-			return err
+			return nil, err
 		}
 		defer func() {
 			_ = tx.Rollback(context.Background())
 		}()
 		//* create category
 		if _, err := tx.Exec(context.Background(), "INSERT INTO category (id, name) VALUES ($1, $2)", f.Category.Id, f.Category.Name); err != nil {
-			return err
+			return nil, err
 		}
 		//* create food
-		if _, err := tx.Exec(context.Background(), "INSERT INTO food (name, description, category_id, price, in_stock, created_at, image) VALUES ($1, $2, $3, $4, $5, $6, $7)",
-			f.Name, f.Description, f.Category.Id, f.Price, f.InStock, time.Now(), f.Image); err != nil {
-			return err
+		if _, err := fr.pool.Exec(ctx, "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";"); err != nil {
+			return nil, err
 		}
+		row := tx.QueryRow(context.Background(), "INSERT INTO food (name, description, category_id, price, in_stock, created_at, image, restaurant_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
+			f.Name, f.Description, f.Category.Id, f.Price, f.InStock, time.Now(), "uuid_generate_v4() || '"+f.Image+"'", f.RestaurantId)
+		if err := row.Scan(&f.Id, &f.Name, &f.Description, &f.CategoryId, &f.Price, &f.InStock, &f.CreatedAt, &f.Image, &f.RestaurantId); err != nil {
+			return nil, err
+		}
+
 		//* commit
 		if err := tx.Commit(context.Background()); err != nil {
-			return err
+			return nil, err
 		}
-		return nil
+		return &f, nil
 	}
-
-	_, err := fr.pool.Exec(ctx, "INSERT INTO food (name, description, category_id, price, in_stock, created_at, image) VALUES ($1, $2, $3, $4, $5, $6, $7)",
-		f.Name, f.Description, f.Category.Id, f.Price, f.InStock, time.Now(), f.Image)
-	if err != nil {
-		return err
+	if _, err := fr.pool.Exec(ctx, "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";"); err != nil {
+		return nil, err
 	}
-	return nil
+	row := fr.pool.QueryRow(ctx, "INSERT INTO food (name, description, category_id, price, in_stock, created_at, image, restaurant_id) VALUES ($1, $2, $3, $4, $5, $6, uuid_generate_v4() || '.' || $7, $8) RETURNING *",
+		f.Name, f.Description, f.Category.Id, f.Price, f.InStock, time.Now(), f.Image, f.RestaurantId)
+	if err := row.Scan(&f.Id, &f.Name, &f.Description, &f.CategoryId, &f.Price, &f.InStock, &f.CreatedAt, &f.Image, &f.RestaurantId); err != nil {
+		return nil, err
+	}
+	return &f, nil
 }
 
 // * Get by id

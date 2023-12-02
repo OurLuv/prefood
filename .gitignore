@@ -9,3 +9,4 @@ requests
 internal/.DS_Store
 internal/server/.DS_Store
 internal/storage/.DS_Storegi
+static/images

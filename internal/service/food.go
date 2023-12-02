@@ -9,7 +9,7 @@ type FoodServiceImpl struct {
 	repo postgres.FoodStorage
 }
 
-func (fs *FoodServiceImpl) Create(f model.Food) error {
+func (fs *FoodServiceImpl) Create(f model.Food) (*model.Food, error) {
 	return fs.repo.Create(f)
 }
 func (fs *FoodServiceImpl) GetById(restaurantId uint, id uint) (*model.Food, error) {
