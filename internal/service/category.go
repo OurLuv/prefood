@@ -8,42 +8,40 @@ import (
 type CategoryService interface {
 	Create(c model.Сategory) error
 	GetById(id uint) (*model.Сategory, error)
-	GetAll() ([]model.Сategory, error)
-	UpdateCategoryById(id uint, c model.Сategory) error
+	GetAll(id uint) ([]model.Сategory, error)
+	UpdateCategory(c model.Сategory) error
 	DeleteCategoryById(id uint) error
 }
 
-type CategoryServiceImpl struct{
+type CategoryServiceImpl struct {
 	repo postgres.CategoryStorage
 }
 
-//* Create
-func (cr *CategoryServiceImpl) Create(c model.Сategory) error{
+// * Create
+func (cr *CategoryServiceImpl) Create(c model.Сategory) error {
 	return cr.repo.Create(c)
 }
 
-//* Get category by id
-func (cs *CategoryServiceImpl) GetById(id uint) (*model.Сategory, error){
+// * Get category by id
+func (cs *CategoryServiceImpl) GetById(id uint) (*model.Сategory, error) {
 	return cs.repo.GetById(id)
 }
 
-//* get all categories
-func (cs *CategoryServiceImpl) GetAll() ([]model.Сategory, error){
-	return cs.repo.GetAll()
+// * get all categories
+func (cs *CategoryServiceImpl) GetAll(id uint) ([]model.Сategory, error) {
+	return cs.repo.GetAll(id)
 }
 
-//* update category
-func (cs *CategoryServiceImpl) UpdateCategoryById(id uint, c model.Сategory) error{
-	return nil
+// * update category
+func (cs *CategoryServiceImpl) UpdateCategory(c model.Сategory) error {
+	return cs.repo.UpdateCategory(c)
 }
 
-//* delete category by id
-func (cs *CategoryServiceImpl) DeleteCategoryById(id uint) error{
+// * delete category by id
+func (cs *CategoryServiceImpl) DeleteCategoryById(id uint) error {
 	return cs.repo.DeleteCategoryById(id)
 }
 
-
-
-func NewCategoryServiceImpl (repo postgres.CategoryStorage) *CategoryServiceImpl{
+func NewCategoryServiceImpl(repo postgres.CategoryStorage) *CategoryServiceImpl {
 	return &CategoryServiceImpl{repo: repo}
 }

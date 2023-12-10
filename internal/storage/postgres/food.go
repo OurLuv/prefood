@@ -103,6 +103,8 @@ func (fr *FoodRepository) GetAll(id uint) ([]model.Food, error) {
 	}
 
 }
+
+// * update
 func (fr *FoodRepository) UpdateById(f model.Food) error {
 	query := "UPDATE food " +
 		"SET " +

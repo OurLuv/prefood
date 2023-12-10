@@ -26,19 +26,20 @@ type Response struct {
 func (h *Handler) InitRoutes() *mux.Router {
 	r := mux.NewRouter()
 	//* Category API
-	r.HandleFunc("/api/category/create", h.CreateCategory).Methods("POST")
-	r.HandleFunc("/api/category/{id}", h.GetCategoryById).Methods("GET")
-	r.HandleFunc("/api/category", h.GetCategories).Methods("GET")
-	r.HandleFunc("/api/category/{id}", h.DeleteCategoryById).Methods("DELETE")
-	r.HandleFunc("/api/category/{id}", h.UpdateCategoryById).Methods("UPDATE")
+	r.HandleFunc("/restaurants/{restaurant_id}/category", h.restaurantAccess(h.CreateCategory)).Methods("POST")
+	r.HandleFunc("/restaurants/category/{category_id}", h.GetCategoryById).Methods("GET")
+	r.HandleFunc("/restaurants/{restaurant_id}/category", h.GetCategories).Methods("GET")
+	r.HandleFunc("/restaurants/{restaurant_id}/category/{category_id}", h.restaurantAccess(h.DeleteCategoryById)).Methods("DELETE")
+	// todo: if 0 rows werer Update - particular message
+	r.HandleFunc("/restaurants/{restaurant_id}/category/{category_id}", h.restaurantAccess(h.UpdateCategoryById)).Methods("PUT")
 
 	//* Restaruant
 	r.HandleFunc("/restaurants", h.userIdentity(h.GetAllRestaurants)).Methods("GET")
 	r.HandleFunc("/restaurants/add", h.userIdentity(h.CreateRestaurant)).Methods("POST")
-	r.HandleFunc("/restaurants/{id}", h.restaurantAccess(h.GetRestaurantById)).Methods("GET")
-	r.HandleFunc("/restaurants/{id}", h.restaurantAccess(h.DeleteRestaurant)).Methods("DELETE")
-	r.HandleFunc("/restaurants/{id}/openclose", h.restaurantAccess(h.OpenClose)).Methods("POST")
-	r.HandleFunc("/restaurants/{id}", h.restaurantAccess(h.UpdateRestaurant)).Methods("PUT")
+	r.HandleFunc("/restaurants/{restaurant_id}", h.restaurantAccess(h.GetRestaurantById)).Methods("GET")
+	r.HandleFunc("/restaurants/{restaurant_id}", h.restaurantAccess(h.DeleteRestaurant)).Methods("DELETE")
+	r.HandleFunc("/restaurants/{restaurant_id}/openclose", h.restaurantAccess(h.OpenClose)).Methods("POST")
+	r.HandleFunc("/restaurants/{restaurant_id}", h.restaurantAccess(h.UpdateRestaurant)).Methods("PUT")
 
 	//*Food
 	// todo: if restaurant doesn't exist - 404
@@ -48,7 +49,6 @@ func (h *Handler) InitRoutes() *mux.Router {
 	r.HandleFunc("/restaurants/{restaurant_id}/menu/add", h.restaurantAccess(h.CreateFood)).Methods("POST")
 	// todo: if 0 rows werer Update - particular message
 	r.HandleFunc("/restaurants/{restaurant_id}/menu/{id}", h.restaurantAccess(h.UpdateFood)).Methods("PUT")
-	//r.HandleFunc("/menu/add", h.CreateFoodView).Methods("GET")
 
 	//*Auth
 	r.HandleFunc("/login", h.login).Methods("POST")

@@ -2,8 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
-	"html/template"
 	"io"
 	"net/http"
 	"os"
@@ -200,21 +198,21 @@ func (h *Handler) DeleteFood(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (h *Handler) CreateFoodView(w http.ResponseWriter, r *http.Request) {
-	t, err := template.ParseFiles("static/create-food.html")
-	if err != nil {
-		errStr := fmt.Sprintf("can't load a view 01: %s", err.Error())
-		http.Error(w, errStr, http.StatusBadRequest)
-		return
-	}
-	mp := make(map[string][]model.Сategory)
-	if mp["Categories"], err = h.service.CategoryService.GetAll(); err != nil {
-		fmt.Print(err.Error())
-	}
+// func (h *Handler) CreateFoodView(w http.ResponseWriter, r *http.Request) {
+// 	t, err := template.ParseFiles("static/create-food.html")
+// 	if err != nil {
+// 		errStr := fmt.Sprintf("can't load a view 01: %s", err.Error())
+// 		http.Error(w, errStr, http.StatusBadRequest)
+// 		return
+// 	}
+// 	mp := make(map[string][]model.Сategory)
+// 	if mp["Categories"], err = h.service.CategoryService.GetAll(); err != nil {
+// 		fmt.Print(err.Error())
+// 	}
 
-	if err = t.Execute(w, mp); err != nil {
-		errStr := fmt.Sprintf("can't load a view 02: %s", err.Error())
-		http.Error(w, errStr, http.StatusBadRequest)
-		return
-	}
-}
+// 	if err = t.Execute(w, mp); err != nil {
+// 		errStr := fmt.Sprintf("can't load a view 02: %s", err.Error())
+// 		http.Error(w, errStr, http.StatusBadRequest)
+// 		return
+// 	}
+// }

@@ -24,7 +24,7 @@ func TestCreateFood(t *testing.T) {
 		CreatedAt:   time.Now(),
 		Image:       "apple.jpg",
 	}
-	if err := fr.Create(food); err != nil {
+	if _, err := fr.Create(food); err != nil {
 		t.Errorf("can't create a model of Food: %v", err)
 	}
 
