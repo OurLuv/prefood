@@ -145,11 +145,12 @@ func (mr *MockUserServiceMockRecorder) CheckForEmail(email interface{}) *gomock.
 }
 
 // Create mocks base method.
-func (m *MockUserService) Create(u model.User) error {
+func (m *MockUserService) Create(u model.User) (*model.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", u)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(*model.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // Create indicates an expected call of Create.

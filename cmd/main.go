@@ -14,6 +14,17 @@ import (
 	"golang.org/x/exp/slog"
 )
 
+// @title PreFood
+// @version 1.0
+// @description REST API server for managing data in a food ordering application.
+
+// @host localhost:8080
+// @BasePath /
+
+// @securityDefinitions.apiKey ApiKeyAuth
+// @in header
+// @name Authorization
+
 // init is invoked before main()
 func initEnv() {
 	if err := godotenv.Load(); err != nil {

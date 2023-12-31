@@ -9,7 +9,7 @@ import (
 
 type RestaurantStorage interface {
 	GetAll(client_id uint) ([]model.Restaurant, error)
-	Create(r model.Restaurant) error
+	Create(r model.Restaurant) (uint, error)
 	GetById(id uint, client_id uint) (*model.Restaurant, error)
 	Update(r model.Restaurant) error
 	Delete(id uint) error
@@ -39,15 +39,17 @@ func (rr *RestaurantRepository) GetAll(client_id uint) ([]model.Restaurant, erro
 }
 
 // * Create
-func (rr *RestaurantRepository) Create(r model.Restaurant) error {
+func (rr *RestaurantRepository) Create(r model.Restaurant) (uint, error) {
+	var id uint
 	query := "INSERT INTO restaurants " +
 		"(name, client_id, phone, country, state, city, street, email, created_at, open) " +
-		"VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)"
-	if _, err := rr.pool.Exec(context.Background(), query,
-		r.Name, r.ClientId, r.Phone, r.Country, r.State, r.City, r.Street, r.Email, r.CreatedAt, r.Open); err != nil {
-		return err
+		"VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id"
+	row := rr.pool.QueryRow(context.Background(), query,
+		r.Name, r.ClientId, r.Phone, r.Country, r.State, r.City, r.Street, r.Email, r.CreatedAt, r.Open)
+	if err := row.Scan(&id); err != nil {
+		return 0, err
 	}
-	return nil
+	return id, nil
 }
 
 // * Get by id

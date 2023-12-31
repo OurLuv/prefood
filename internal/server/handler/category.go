@@ -47,10 +47,10 @@ func (h *Handler) CreateCategory(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// sending response
-	resp := Response{
-		Success: true, Message: "Category is added",
-	}
-	json.NewEncoder(w).Encode(resp)
+	// resp := Response{
+	// 	Success: true, Message: "Category is added",
+	// }
+	// json.NewEncoder(w).Encode(resp)
 }
 
 // * Get by id
@@ -126,10 +126,10 @@ func (h *Handler) UpdateCategoryById(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// sending response
-	resp := Response{
-		Success: true, Message: "Category is updated",
-	}
-	json.NewEncoder(w).Encode(resp)
+	// resp := Response{
+	// 	Success: true, Message: "Category is updated",
+	// }
+	// json.NewEncoder(w).Encode(resp)
 }
 
 // * Delete by id
@@ -150,8 +150,8 @@ func (h *Handler) DeleteCategoryById(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// sending response
-	resp := Response{
-		Success: true, Message: "Category is deleted",
-	}
-	json.NewEncoder(w).Encode(resp)
+	// resp := Response{
+	// 	Success: true, Message: "Category is deleted",
+	// }
+	// json.NewEncoder(w).Encode(resp)
 }

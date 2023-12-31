@@ -1,0 +1,312 @@
+basePath: /
+definitions:
+  handler.Response:
+    properties:
+      data: {}
+      error:
+        type: string
+      message:
+        type: string
+      status:
+        type: integer
+    type: object
+  handler.ResponseId:
+    properties:
+      id:
+        type: integer
+      response:
+        $ref: '#/definitions/handler.Response'
+    type: object
+  handler.ResponseRestaurant:
+    properties:
+      response:
+        $ref: '#/definitions/handler.Response'
+      restaurant:
+        $ref: '#/definitions/model.Restaurant'
+      restaurants:
+        items:
+          $ref: '#/definitions/model.Restaurant'
+        type: array
+    type: object
+  handler.ResponseToken:
+    properties:
+      status:
+        type: integer
+      token:
+        type: string
+    type: object
+  handler.UserLogin:
+    properties:
+      email:
+        maxLength: 255
+        type: string
+      password:
+        maxLength: 255
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  model.Restaurant:
+    properties:
+      city:
+        type: string
+      client_id:
+        type: integer
+      country:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        maxLength: 255
+        type: string
+      open:
+        type: boolean
+      phone:
+        type: string
+      state:
+        type: string
+      street:
+        type: string
+      time:
+        type: string
+    required:
+    - email
+    - name
+    - phone
+    type: object
+  model.User:
+    properties:
+      email:
+        maxLength: 255
+        type: string
+      firstname:
+        maxLength: 255
+        type: string
+      id:
+        type: integer
+      lastname:
+        type: string
+      password:
+        maxLength: 255
+        type: string
+    required:
+    - email
+    - firstname
+    - password
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: REST API server for managing data in a food ordering application.
+  title: PreFood
+  version: "1.0"
+paths:
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: sign in account
+      operationId: sign-in-account
+      parameters:
+      - description: account info
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/handler.UserLogin'
+      produces:
+      - application/json
+      responses:
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.Response'
+      summary: SignIn
+      tags:
+      - Auth
+  /restaurants:
+    get:
+      description: get all restaurants
+      operationId: get-restaurants
+      produces:
+      - application/json
+      responses:
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: GetRestaurants
+      tags:
+      - Restaurant
+    post:
+      consumes:
+      - application/json
+      description: create restaurant
+      operationId: create-restaurant
+      parameters:
+      - description: restaurant info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/model.Restaurant'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.ResponseId'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: CreateRestaurant
+      tags:
+      - Restaurant
+  /restaurants/{restaurant_id}:
+    delete:
+      description: delete restaurant by id
+      operationId: delete-restaurant
+      parameters:
+      - description: restaurant id
+        in: path
+        name: restaurant_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.Response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: DeleteRestaurant
+      tags:
+      - Restaurant
+    get:
+      description: get restaurant by id
+      operationId: get-restaurant-by-id
+      parameters:
+      - description: restaurant id
+        in: path
+        name: restaurant_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.ResponseRestaurant'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: GetRestaurantById
+      tags:
+      - Restaurant
+    put:
+      consumes:
+      - application/json
+      description: update restaurant
+      operationId: update-restaurant
+      parameters:
+      - description: restaurant id
+        in: path
+        name: restaurant_id
+        required: true
+        type: integer
+      - description: restaurant info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/model.Restaurant'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.Response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: UpdateRestaurant
+      tags:
+      - Restaurant
+  /restaurants/{restaurant_id}/openclose:
+    post:
+      description: open or close restaurant
+      operationId: open-close-restaurant
+      parameters:
+      - description: restaurant id
+        in: path
+        name: restaurant_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.Response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: OpenCloseRestaurant
+      tags:
+      - Restaurant
+  /signup:
+    post:
+      consumes:
+      - application/json
+      description: create account
+      operationId: create-account
+      parameters:
+      - description: account info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/model.User'
+      produces:
+      - application/json
+      responses:
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.Response'
+      summary: SignUp
+      tags:
+      - Auth
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

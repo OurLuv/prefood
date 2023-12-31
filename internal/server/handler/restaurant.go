@@ -15,6 +15,14 @@ type ResponseRestaurant struct {
 }
 
 // * Get all
+// @Summary GetRestaurants
+// @Security ApiKeyAuth
+// @Tags Restaurant
+// @Description get all restaurants
+// @ID get-restaurants
+// @Produce json
+// @Failure default {object} Response
+// @Router /restaurants [get]
 func (h *Handler) GetAllRestaurants(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	id, ok := r.Context().Value("id").(uint)
@@ -29,14 +37,26 @@ func (h *Handler) GetAllRestaurants(w http.ResponseWriter, r *http.Request) {
 		SendError(w, "Internal error", http.StatusInternalServerError)
 		return
 	}
+
 	resp := ResponseRestaurant{
-		Response:    Response{Success: true},
+		Response:    Response{Status: 1},
 		Restaurants: models,
 	}
 	json.NewEncoder(w).Encode(resp)
 }
 
 // * Create
+// @Summary CreateRestaurant
+// @Security ApiKeyAuth
+// @Tags Restaurant
+// @Description create restaurant
+// @ID create-restaurant
+// @Accept json
+// @Produce json
+// @Param input body model.Restaurant true "restaurant info"
+// @Success 200 {object} ResponseId
+// @Failure default {object} Response
+// @Router /restaurants [post]
 func (h *Handler) CreateRestaurant(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	// getting id from context
@@ -65,19 +85,34 @@ func (h *Handler) CreateRestaurant(w http.ResponseWriter, r *http.Request) {
 
 	// creating restaurant
 	restaurant.ClientId = id
-	err := h.service.RestaruantService.Create(restaurant)
+	restaurant_id, err := h.service.RestaruantService.Create(restaurant)
 	if err != nil {
 		h.logger.Error("Can't get data:", err)
 		SendError(w, "There is no data", http.StatusInternalServerError)
 		return
 	}
-	resp := Response{
-		Success: true,
+	resp := ResponseId{
+		Response: Response{
+			Status: 1,
+		},
+		Id: restaurant_id,
 	}
 	json.NewEncoder(w).Encode(&resp)
 }
 
 // * Update
+// @Summary UpdateRestaurant
+// @Security ApiKeyAuth
+// @Tags Restaurant
+// @Description update restaurant
+// @ID update-restaurant
+// @Param restaurant_id path int true "restaurant id"
+// @Accept json
+// @Produce json
+// @Param input body model.Restaurant true "restaurant info"
+// @Success 200 {object} Response
+// @Failure default {object} Response
+// @Router /restaurants/{restaurant_id} [put]
 func (h *Handler) UpdateRestaurant(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -120,12 +155,22 @@ func (h *Handler) UpdateRestaurant(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resp := Response{
-		Success: true,
+		Status: 1,
 	}
 	json.NewEncoder(w).Encode(&resp)
 }
 
 // * Get by id
+// @Summary GetRestaurantById
+// @Security ApiKeyAuth
+// @Tags Restaurant
+// @Description get restaurant by id
+// @ID get-restaurant-by-id
+// @Param restaurant_id path int true "restaurant id"
+// @Produce json
+// @Success 200 {object} ResponseRestaurant
+// @Failure default {object} Response
+// @Router /restaurants/{restaurant_id} [get]
 func (h *Handler) GetRestaurantById(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	restaurant, ok := r.Context().Value("restaurant").(*model.Restaurant)
@@ -134,14 +179,26 @@ func (h *Handler) GetRestaurantById(w http.ResponseWriter, r *http.Request) {
 		SendError(w, "Can't get a restauarant", http.StatusInternalServerError)
 		return
 	}
+
+	_ = restaurant
 	resp := ResponseRestaurant{
-		Response:   Response{Success: true},
+		Response:   Response{Status: 1},
 		Restaurant: restaurant,
 	}
 	json.NewEncoder(w).Encode(&resp)
 }
 
 // * Delete
+// @Summary DeleteRestaurant
+// @Security ApiKeyAuth
+// @Tags Restaurant
+// @Description delete restaurant by id
+// @ID delete-restaurant
+// @Param restaurant_id path int true "restaurant id"
+// @Produce json
+// @Success 200 {object} Response
+// @Failure default {object} Response
+// @Router /restaurants/{restaurant_id} [delete]
 func (h *Handler) DeleteRestaurant(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	restaurant, ok := r.Context().Value("restaurant").(*model.Restaurant)
@@ -156,11 +213,22 @@ func (h *Handler) DeleteRestaurant(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	resp := Response{
-		Success: true,
+		Status: 1,
 	}
 	json.NewEncoder(w).Encode(&resp)
 }
 
+// * Open-close
+// @Summary OpenCloseRestaurant
+// @Security ApiKeyAuth
+// @Tags Restaurant
+// @Description open or close restaurant
+// @ID open-close-restaurant
+// @Param restaurant_id path int true "restaurant id"
+// @Produce json
+// @Success 200 {object} Response
+// @Failure default {object} Response
+// @Router /restaurants/{restaurant_id}/openclose [post]
 func (h *Handler) OpenClose(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	restaurant, ok := r.Context().Value("restaurant").(*model.Restaurant)
@@ -182,8 +250,10 @@ func (h *Handler) OpenClose(w http.ResponseWriter, r *http.Request) {
 	} else {
 		msg = "Restaurant is open"
 	}
+
+	_ = msg
 	resp := Response{
-		Success: true,
+		Status:  1,
 		Message: msg,
 	}
 	json.NewEncoder(w).Encode(&resp)

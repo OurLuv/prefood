@@ -51,8 +51,8 @@ func (h *Handler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// sending response
-	resp := Response{Success: true, Message: "Order is created"}
-	json.NewEncoder(w).Encode(resp)
+	// resp := Response{Success: true, Message: "Order is created"}
+	// json.NewEncoder(w).Encode(resp)
 }
 
 // * Get all orders
@@ -72,14 +72,15 @@ func (h *Handler) GetAllOrders(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	_ = orders
 	// sending response
-	resp := ResponseOrder{
-		Response: Response{
-			Success: true,
-		},
-		Orders: orders,
-	}
-	json.NewEncoder(w).Encode(&resp)
+	// resp := ResponseOrder{
+	// 	Response: Response{
+	// 		Success: true,
+	// 	},
+	// 	Orders: orders,
+	// }
+	// json.NewEncoder(w).Encode(&resp)
 }
 
 // * Get by id
@@ -99,14 +100,15 @@ func (h *Handler) GetOrderById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	_ = order
 	// sending response
-	resp := ResponseOrder{
-		Response: Response{
-			Success: true,
-		},
-		Order: order,
-	}
-	json.NewEncoder(w).Encode(&resp)
+	// resp := ResponseOrder{
+	// 	Response: Response{
+	// 		Success: true,
+	// 	},
+	// 	Order: order,
+	// }
+	// json.NewEncoder(w).Encode(&resp)
 }
 
 // * Delete
@@ -126,10 +128,10 @@ func (h *Handler) DeleteOrderById(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// sending response
-	resp := Response{
-		Success: true,
-	}
-	json.NewEncoder(w).Encode(&resp)
+	// resp := Response{
+	// 	Success: true,
+	// }
+	// json.NewEncoder(w).Encode(&resp)
 }
 
 // * Change status
@@ -164,10 +166,11 @@ func (h *Handler) ChangeOrderStatus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	_ = statusDB
 	// sending response
-	resp := Response{
-		Success: true,
-		Message: "status is " + statusDB,
-	}
-	json.NewEncoder(w).Encode(&resp)
+	// resp := Response{
+	// 	Success: true,
+	// 	Message: "status is " + statusDB,
+	// }
+	// json.NewEncoder(w).Encode(&resp)
 }

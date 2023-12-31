@@ -9,7 +9,7 @@ import (
 
 type RestaruantService interface {
 	GetAll(client_id uint) ([]model.Restaurant, error)
-	Create(r model.Restaurant) error
+	Create(r model.Restaurant) (uint, error)
 	GetById(id uint, client_id uint) (*model.Restaurant, error)
 	Update(r model.Restaurant, data ToUpdate) error
 	Delete(id uint) error
@@ -32,7 +32,7 @@ type RestaruantServiceImpl struct {
 func (rsi *RestaruantServiceImpl) GetAll(client_id uint) ([]model.Restaurant, error) {
 	return rsi.repo.GetAll(client_id)
 }
-func (rsi *RestaruantServiceImpl) Create(r model.Restaurant) error {
+func (rsi *RestaruantServiceImpl) Create(r model.Restaurant) (uint, error) {
 	r.CreatedAt = time.Now()
 	return rsi.repo.Create(r)
 }

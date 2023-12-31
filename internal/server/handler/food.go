@@ -36,12 +36,13 @@ func (h *Handler) GetAllFood(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	_ = food
 	// sending response
-	resp := FoodResponse{
-		Response: Response{Success: true},
-		Menu:     food,
-	}
-	json.NewEncoder(w).Encode(resp)
+	// resp := FoodResponse{
+	// 	Response: Response{Success: true},
+	// 	Menu:     food,
+	// }
+	// json.NewEncoder(w).Encode(resp)
 
 }
 
@@ -65,12 +66,13 @@ func (h *Handler) GetFoodById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	_ = food
 	// sending response
-	resp := FoodResponse{
-		Response: Response{Success: true},
-		Food:     food,
-	}
-	json.NewEncoder(w).Encode(resp)
+	// resp := FoodResponse{
+	// 	Response: Response{Success: true},
+	// 	Food:     food,
+	// }
+	// json.NewEncoder(w).Encode(resp)
 }
 
 // * Create food
@@ -153,11 +155,11 @@ func (h *Handler) CreateFood(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// sending response
-	resp := FoodResponse{
-		Response: Response{Success: true, Message: "Row is added to database"},
-		Food:     f,
-	}
-	json.NewEncoder(w).Encode(resp)
+	// resp := FoodResponse{
+	// 	Response: Response{Success: true, Message: "Row is added to database"},
+	// 	Food:     f,
+	// }
+	// json.NewEncoder(w).Encode(resp)
 }
 
 // * Update
@@ -189,8 +191,8 @@ func (h *Handler) UpdateFood(w http.ResponseWriter, r *http.Request) {
 		SendError(w, "Internal error", http.StatusInternalServerError)
 		return
 	}
-	resp := Response{Success: true, Message: "Item is updated"}
-	json.NewEncoder(w).Encode(resp)
+	// resp := Response{Success: true, Message: "Item is updated"}
+	// json.NewEncoder(w).Encode(resp)
 }
 
 // * Delete

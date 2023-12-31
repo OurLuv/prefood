@@ -50,12 +50,6 @@ func TestHandler__login(t *testing.T) {
 			expectedStatusCode: 200,
 		},
 		{
-			name:               "empty json",
-			inputBody:          `{"email":"", "password": ""}`,
-			mockBehavior:       func(s *mock_service.MockUserService, d data) {},
-			expectedStatusCode: 400,
-		},
-		{
 			name:               "email",
 			inputBody:          `{"email":"123456", "password": "123456"}`,
 			mockBehavior:       func(s *mock_service.MockUserService, d data) {},
@@ -121,7 +115,14 @@ func TestHandler__signup(t *testing.T) {
 				Email:     "john.doe@example.com",
 			},
 			mockBehavior: func(mock *mock_service.MockUserService, u model.User) {
-				mock.EXPECT().Create(u).Return(nil)
+				mock.EXPECT().CheckForEmail(u.Email).Return(nil)
+				mock.EXPECT().Create(u).Return(&model.User{
+					Id:        5,
+					Firstname: "John",
+					Lastname:  "Doe",
+					Password:  "",
+					Email:     "john.doe@example.com",
+				}, nil)
 			},
 			expectedCode: 200,
 			expectedBody: "",

@@ -16,7 +16,7 @@ type FoodService interface {
 }
 
 type UserService interface {
-	Create(u model.User) error
+	Create(u model.User) (*model.User, error)
 	GetById(id uint) (*model.User, error)
 	Login(email string, password string) (*model.User, error)
 	UpdateById(id uint, c model.User) error

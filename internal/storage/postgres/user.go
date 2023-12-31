@@ -9,7 +9,7 @@ import (
 )
 
 type UserStorage interface {
-	Create(f model.User) error
+	Create(f model.User) (*model.User, error)
 	GetById(id uint) (*model.User, error)
 	Login(email string) (*model.User, error)
 	UpdateById(id uint, c model.User) error
@@ -22,12 +22,14 @@ type UserRepository struct {
 }
 
 // * Create
-func (ur *UserRepository) Create(f model.User) error {
-	query := "INSERT INTO users (firstname, lastname, password, email) VALUES ($1, $2, $3, $4)"
-	if _, err := ur.pool.Exec(context.Background(), query, f.Firstname, f.Lastname, f.Password, f.Email); err != nil {
-		return err
+func (ur *UserRepository) Create(u model.User) (*model.User, error) {
+	query := "INSERT INTO users (firstname, lastname, password, email) VALUES ($1, $2, $3, $4) RETURNING id"
+	row := ur.pool.QueryRow(context.Background(), query, u.Firstname, u.Lastname, u.Password, u.Email)
+	if err := row.Scan(&u.Id); err != nil {
+		return nil, err
 	}
-	return nil
+
+	return &u, nil
 }
 
 // * Get by id

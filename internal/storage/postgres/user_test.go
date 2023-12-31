@@ -14,7 +14,7 @@ func TestCreateUser(t *testing.T) {
 		Password:  "gghh543s",
 		Email:     "aorlowde@gmail.com",
 	}
-	if err := repo.Create(u); err != nil {
+	if _, err := repo.Create(u); err != nil {
 		t.Error(err)
 	}
 }

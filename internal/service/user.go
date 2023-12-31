@@ -10,10 +10,10 @@ type UserServiceImpl struct {
 	repo postgres.UserStorage
 }
 
-func (us *UserServiceImpl) Create(u model.User) error {
+func (us *UserServiceImpl) Create(u model.User) (*model.User, error) {
 	passwordByte, err := bcrypt.GenerateFromPassword([]byte(u.Password), 10)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	u.Password = string(passwordByte)
 	return us.repo.Create(u)

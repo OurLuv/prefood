@@ -3,21 +3,38 @@ package handler
 import (
 	"encoding/json"
 	"net/http"
-	"time"
 
 	"github.com/OurLuv/prefood/internal/model"
 	"github.com/OurLuv/prefood/internal/server/middleware"
 	"github.com/go-playground/validator/v10"
 )
 
+type UserLogin struct {
+	Email    string `json:"email" validate:"required,email,max=255"`
+	Password string `json:"password" validate:"required,max=255"`
+}
+
+type ResponseToken struct {
+	Status int    `json:"status"`
+	Token  string `json:"token"`
+}
+
 // * Login
+// @Summary SignIn
+// @Tags Auth
+// @Description sign in account
+// @ID sign-in-account
+// @Accept json
+// @Produce json
+// @Param data body UserLogin true "account info"
+// @Success default {object} ResponseToken
+// @Failure default {object} Response
+// @Router /login [post]
 func (h *Handler) login(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	// getting data from request
-	data := struct {
-		Email    string `json:"email" validate:"required,email,max=255"`
-		Password string `json:"password" validate:"required,max=255"`
-	}{}
+
+	data := UserLogin{}
 	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
 		h.logger.Error("getting data from request err: ", err)
 		SendError(w, "There is no data", http.StatusBadRequest)
@@ -47,23 +64,34 @@ func (h *Handler) login(w http.ResponseWriter, r *http.Request) {
 		SendError(w, "Email or password is incorrect", http.StatusBadRequest)
 		return
 	}
-	cookie := http.Cookie{
-		Name:     "token",
-		Value:    token,
-		Path:     "/",
-		MaxAge:   3600,
-		HttpOnly: true,
-		Secure:   true,
-		SameSite: http.SameSiteLaxMode,
-	}
-	http.SetCookie(w, &cookie)
-	response := Response{
-		Success: true,
+	// cookie := http.Cookie{
+	// 	Name:     "token",
+	// 	Value:    token,
+	// 	Path:     "/",
+	// 	MaxAge:   3600,
+	// 	HttpOnly: true,
+	// 	Secure:   true,
+	// 	SameSite: http.SameSiteLaxMode,
+	// }
+	//http.SetCookie(w, &cookie)
+
+	response := ResponseToken{
+		Status: 1,
+		Token:  token,
 	}
 	json.NewEncoder(w).Encode(response)
 }
 
 // * Signup
+// @Summary SignUp
+// @Tags Auth
+// @Description create account
+// @ID create-account
+// @Accept json
+// @Produce json
+// @Param input body model.User true "account info"
+// @Response default {object} Response
+// @Router /signup [post]
 func (h *Handler) signup(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	// getting user
@@ -91,22 +119,23 @@ func (h *Handler) signup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// creating user
-	if err := h.service.UserService.Create(user); err != nil {
+	var u *model.User
+	var err error
+	if u, err = h.service.UserService.Create(user); err != nil {
 		h.logger.Error("user create error: ", err)
 		SendError(w, "can't sign up", 500)
 		return
 	}
+	u.Password = ""
+	response := Response{
+		Status: 1,
+		Data:   u,
+	}
+
+	json.NewEncoder(w).Encode(response)
 }
 
 // * Signout
 func (h *Handler) signout(w http.ResponseWriter, r *http.Request) {
-	cookie := http.Cookie{
-		Name:     "token",
-		Value:    "",
-		Path:     "/",
-		Expires:  time.Unix(0, 0),
-		HttpOnly: true,
-	}
 
-	http.SetCookie(w, &cookie)
 }
