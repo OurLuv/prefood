@@ -73,7 +73,7 @@ func (fr *FoodRepository) Create(f model.Food) (*model.Food, error) {
 func (fr *FoodRepository) GetById(restaurantId uint, id uint) (*model.Food, error) {
 	query := "SELECT * FROM food f JOIN category c on f.category_id = c.id WHERE f.restaurant_id = $1 AND f.id = $2"
 	var f model.Food
-	var c model.Сategory
+	var c model.Category
 	row := fr.pool.QueryRow(context.Background(), query, restaurantId, id)
 	if err := row.Scan(&f.Id, &f.Name, &f.Description, &f.CategoryId, &f.Price, &f.InStock, &f.CreatedAt, &f.Image, &f.RestaurantId, &c.Id, &c.Name); err != nil {
 		return nil, err
@@ -86,7 +86,7 @@ func (fr *FoodRepository) GetById(restaurantId uint, id uint) (*model.Food, erro
 func (fr *FoodRepository) GetAll(id uint) ([]model.Food, error) {
 	query := "SELECT * FROM food f JOIN category c on f.category_id = c.id WHERE f.restaurant_id = $1"
 	var f model.Food
-	var c model.Сategory
+	var c model.Category
 	var food []model.Food
 	if rows, err := fr.pool.Query(context.Background(), query, id); err != nil {
 		return nil, err

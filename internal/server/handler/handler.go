@@ -45,7 +45,7 @@ func (h *Handler) InitRoutes() *mux.Router {
 
 	//* Category API
 	r.HandleFunc("/restaurants/{restaurant_id}/category", h.restaurantAccess(h.CreateCategory)).Methods("POST")
-	r.HandleFunc("/restaurants/category/{category_id}", h.GetCategoryById).Methods("GET")
+	r.HandleFunc("/restaurants/{restaurant_id}/category/{category_id}", h.GetCategoryById).Methods("GET")
 	r.HandleFunc("/restaurants/{restaurant_id}/category", h.GetCategories).Methods("GET")
 	r.HandleFunc("/restaurants/{restaurant_id}/category/{category_id}", h.restaurantAccess(h.DeleteCategoryById)).Methods("DELETE")
 	// todo: if 0 rows werer Update - particular message
@@ -122,25 +122,4 @@ func ValidateError(errs validator.ValidationErrors) Response {
 		Status: -1,
 		Error:  strings.Join(msgs, "; "),
 	}
-}
-
-func createMap(response Response, data interface{}) map[string]interface{} {
-	responseJSON, _ := json.Marshal(response)
-	userJSON, _ := json.Marshal(data)
-
-	var responseMap map[string]interface{}
-	var userMap map[string]interface{}
-
-	json.Unmarshal(responseJSON, &responseMap)
-	json.Unmarshal(userJSON, &userMap)
-
-	result := make(map[string]interface{})
-	for k, v := range responseMap {
-		result[k] = v
-	}
-	for k, v := range userMap {
-		result[k] = v
-	}
-
-	return result
 }

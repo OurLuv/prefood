@@ -6,10 +6,10 @@ import (
 )
 
 type CategoryService interface {
-	Create(c model.Сategory) error
-	GetById(id uint) (*model.Сategory, error)
-	GetAll(id uint) ([]model.Сategory, error)
-	UpdateCategory(c model.Сategory) error
+	Create(c model.Category) (uint, error)
+	GetById(id uint, restaurantId uint) (*model.Category, error)
+	GetAll(id uint) ([]model.Category, error)
+	UpdateCategory(c model.Category) error
 	DeleteCategoryById(id uint) error
 }
 
@@ -18,22 +18,22 @@ type CategoryServiceImpl struct {
 }
 
 // * Create
-func (cr *CategoryServiceImpl) Create(c model.Сategory) error {
+func (cr *CategoryServiceImpl) Create(c model.Category) (uint, error) {
 	return cr.repo.Create(c)
 }
 
 // * Get category by id
-func (cs *CategoryServiceImpl) GetById(id uint) (*model.Сategory, error) {
-	return cs.repo.GetById(id)
+func (cs *CategoryServiceImpl) GetById(id uint, restaurantId uint) (*model.Category, error) {
+	return cs.repo.GetById(id, restaurantId)
 }
 
 // * get all categories
-func (cs *CategoryServiceImpl) GetAll(id uint) ([]model.Сategory, error) {
+func (cs *CategoryServiceImpl) GetAll(id uint) ([]model.Category, error) {
 	return cs.repo.GetAll(id)
 }
 
 // * update category
-func (cs *CategoryServiceImpl) UpdateCategory(c model.Сategory) error {
+func (cs *CategoryServiceImpl) UpdateCategory(c model.Category) error {
 	return cs.repo.UpdateCategory(c)
 }
 

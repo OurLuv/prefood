@@ -10,6 +10,16 @@ definitions:
       status:
         type: integer
     type: object
+  handler.ResponseData:
+    properties:
+      data: {}
+      error:
+        type: string
+      message:
+        type: string
+      status:
+        type: integer
+    type: object
   handler.ResponseId:
     properties:
       id:
@@ -46,6 +56,18 @@ definitions:
     required:
     - email
     - password
+    type: object
+  model.Category:
+    properties:
+      id:
+        type: integer
+      name:
+        maxLength: 255
+        type: string
+      restaurant_id:
+        type: integer
+    required:
+    - name
     type: object
   model.Restaurant:
     properties:
@@ -255,6 +277,166 @@ paths:
       summary: UpdateRestaurant
       tags:
       - Restaurant
+  /restaurants/{restaurant_id}/category:
+    get:
+      consumes:
+      - application/json
+      description: get categorie
+      operationId: get-categories
+      parameters:
+      - description: restaurant id
+        in: path
+        name: restaurant_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.ResponseData'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.Response'
+      summary: GetCategories
+      tags:
+      - Category
+    post:
+      consumes:
+      - application/json
+      description: create category
+      operationId: create-category
+      parameters:
+      - description: restaurant id
+        in: path
+        name: restaurant_id
+        required: true
+        type: integer
+      - description: category info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/model.Category'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.ResponseId'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: CreateCategory
+      tags:
+      - Category
+  /restaurants/{restaurant_id}/category/{category_id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete category
+      operationId: delete-category
+      parameters:
+      - description: restaurant id
+        in: path
+        name: restaurant_id
+        required: true
+        type: integer
+      - description: category id
+        in: path
+        name: category_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.Response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: DeleteCategory
+      tags:
+      - Category
+    get:
+      consumes:
+      - application/json
+      description: get category by id
+      operationId: get-category-by-id
+      parameters:
+      - description: restaurant id
+        in: path
+        name: restaurant_id
+        required: true
+        type: integer
+      - description: category id
+        in: path
+        name: category_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.ResponseId'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.Response'
+      summary: GetCategoryById
+      tags:
+      - Category
+    put:
+      consumes:
+      - application/json
+      description: update category
+      operationId: update-category
+      parameters:
+      - description: restaurant id
+        in: path
+        name: restaurant_id
+        required: true
+        type: integer
+      - description: category id
+        in: path
+        name: category_id
+        required: true
+        type: integer
+      - description: category info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/model.Category'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.ResponseId'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: UpdateCategory
+      tags:
+      - Category
   /restaurants/{restaurant_id}/openclose:
     post:
       description: open or close restaurant

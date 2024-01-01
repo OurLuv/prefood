@@ -20,7 +20,7 @@ func TestCreateRestaurant(t *testing.T) {
 		Email:     "info@subway.co.uk",
 		CreatedAt: time.Now(),
 	}
-	if err := repo.Create(r); err != nil {
+	if _, err := repo.Create(r); err != nil {
 		t.Error(err)
 	}
 }

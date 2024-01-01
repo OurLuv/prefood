@@ -4,15 +4,17 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/OurLuv/prefood/internal/common"
 	"github.com/OurLuv/prefood/internal/model"
+	"github.com/jackc/pgx"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type CategoryStorage interface {
-	Create(c model.Сategory) error
-	GetById(id uint) (*model.Сategory, error)
-	GetAll(id uint) ([]model.Сategory, error)
-	UpdateCategory(c model.Сategory) error
+	Create(c model.Category) (uint, error)
+	GetById(id uint, restaurantId uint) (*model.Category, error)
+	GetAll(id uint) ([]model.Category, error)
+	UpdateCategory(c model.Category) error
 	DeleteCategoryById(id uint) error
 }
 
@@ -21,22 +23,26 @@ type CategoryRepository struct {
 }
 
 // * Create
-func (cr *CategoryRepository) Create(c model.Сategory) error {
+func (cr *CategoryRepository) Create(c model.Category) (uint, error) {
+	var id uint
 	ctx := context.Background()
-	_, err := cr.pool.Exec(ctx, "INSERT INTO category (name, restaurant_id) VALUES ($1, $2)", c.Name, c.RestaurantId)
-	if err != nil {
-		return fmt.Errorf("failed to create a category: %s", err)
+	row := cr.pool.QueryRow(ctx, "INSERT INTO category (name, restaurant_id) VALUES ($1, $2) RETURNING id", c.Name, c.RestaurantId)
+	if err := row.Scan(&id); err != nil {
+		return 0, fmt.Errorf("failed to create a category: %s", err)
 	}
-	return nil
+	return id, nil
 }
 
 // * Get category by id
-func (cr *CategoryRepository) GetById(id uint) (*model.Сategory, error) {
-	query := "SELECT * FROM category WHERE id = $1"
-	row := cr.pool.QueryRow(context.Background(), query, id)
-	category := &model.Сategory{}
+func (cr *CategoryRepository) GetById(id uint, restaurantId uint) (*model.Category, error) {
+	query := "SELECT * FROM category WHERE id = $1 and restaurant_id = $2"
+	row := cr.pool.QueryRow(context.Background(), query, id, restaurantId)
+	category := &model.Category{}
 	err := row.Scan(&category.Id, &category.Name, &category.RestaurantId)
 	if err != nil {
+		if err.Error() == pgx.ErrNoRows.Error() {
+			return nil, common.RowNotFound
+		}
 		return nil, err
 	}
 
@@ -44,14 +50,14 @@ func (cr *CategoryRepository) GetById(id uint) (*model.Сategory, error) {
 }
 
 // * get all categories
-func (cr *CategoryRepository) GetAll(id uint) ([]model.Сategory, error) {
+func (cr *CategoryRepository) GetAll(id uint) ([]model.Category, error) {
 	query := "SELECT * FROM category WHERE restaurant_id = $1"
 	row, err := cr.pool.Query(context.Background(), query, id)
-	res := []model.Сategory{}
+	res := []model.Category{}
 	if err != nil {
 		return nil, err
 	}
-	category := model.Сategory{}
+	category := model.Category{}
 	for row.Next() {
 		err := row.Scan(&category.Id, &category.Name, &category.RestaurantId)
 		res = append(res, category)
@@ -64,12 +70,16 @@ func (cr *CategoryRepository) GetAll(id uint) ([]model.Сategory, error) {
 }
 
 // * update category
-func (cr *CategoryRepository) UpdateCategory(c model.Сategory) error {
+func (cr *CategoryRepository) UpdateCategory(c model.Category) error {
 	query := "UPDATE category " +
 		"SET " +
 		"name = $1 " +
 		"WHERE id = $2"
-	if _, err := cr.pool.Exec(context.Background(), query, c.Name, c.Id); err != nil {
+	tag, err := cr.pool.Exec(context.Background(), query, c.Name, c.Id)
+	if tag.RowsAffected() != 1 {
+		return common.RowNotFound
+	}
+	if err != nil {
 		return err
 	}
 	return nil

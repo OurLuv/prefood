@@ -9,7 +9,7 @@ import (
 
 func TestCreateFood(t *testing.T) {
 	fr := NewFoodRepository(pool)
-	category := model.Сategory{
+	category := model.Category{
 		//Id:   25,
 		Name: "Fruits",
 	}
@@ -32,7 +32,7 @@ func TestCreateFood(t *testing.T) {
 
 func TestUpdateFood(t *testing.T) {
 	fr := NewFoodRepository(pool)
-	category := model.Сategory{
+	category := model.Category{
 		//Id:   25,
 		Name: "Fruits",
 	}
