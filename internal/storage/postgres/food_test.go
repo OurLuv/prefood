@@ -67,14 +67,11 @@ func TestGetById(t *testing.T) {
 }
 
 func TestGetAll(t *testing.T) {
-	// fr := NewFoodRepository(pool)
-	// var err error
-	// var food []model.Food
-	// if food, err = fr.GetAll(); err != nil {
-	// 	if err == pgx.ErrNoRows {
-	// 		fmt.Println(food)
-	// 	} else {
-	// 		t.Error(err)
-	// 	}
-	// }
+	fr := NewFoodRepository(pool)
+	var err error
+	var food []model.Food
+	if food, err = fr.GetAll(5); err != nil {
+		t.Error(err)
+	}
+	_ = food
 }

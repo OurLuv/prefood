@@ -494,6 +494,141 @@ const docTemplate = `{
                 }
             }
         },
+        "/restaurants/{restaurant_id}/menu": {
+            "get": {
+                "description": "get food",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Menu"
+                ],
+                "summary": "GetFood",
+                "operationId": "get-food",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "restaurant id",
+                        "name": "restaurant_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.FoodResponse"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/handler.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "create food",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Menu"
+                ],
+                "summary": "CreateFood",
+                "operationId": "create-food",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "restaurant id",
+                        "name": "restaurant_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "food image",
+                        "name": "img",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "food info",
+                        "name": "input",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.FoodResponse"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/handler.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/restaurants/{restaurant_id}/menu/{id}": {
+            "get": {
+                "description": "get food by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Menu"
+                ],
+                "summary": "GetFoodById",
+                "operationId": "get-food-by-id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "restaurant id",
+                        "name": "restaurant_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "food id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.FoodResponse"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/handler.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/restaurants/{restaurant_id}/openclose": {
             "post": {
                 "security": [
@@ -572,6 +707,23 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "handler.FoodResponse": {
+            "type": "object",
+            "properties": {
+                "food": {
+                    "$ref": "#/definitions/model.Food"
+                },
+                "menu": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Food"
+                    }
+                },
+                "response": {
+                    "$ref": "#/definitions/handler.Response"
+                }
+            }
+        },
         "handler.Response": {
             "type": "object",
             "properties": {
@@ -673,6 +825,47 @@ const docTemplate = `{
                 },
                 "restaurant_id": {
                     "type": "integer"
+                }
+            }
+        },
+        "model.Food": {
+            "type": "object",
+            "required": [
+                "image",
+                "name",
+                "price"
+            ],
+            "properties": {
+                "category": {
+                    "$ref": "#/definitions/model.Category"
+                },
+                "category-id": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "in_stock": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "restaurant_id": {
+                    "type": "integer"
+                },
+                "time": {
+                    "type": "string"
                 }
             }
         },

@@ -13,7 +13,7 @@ type FoodStorage interface {
 	Create(f model.Food) (*model.Food, error)
 	GetById(restaurantId uint, id uint) (*model.Food, error)
 	GetAll(id uint) ([]model.Food, error)
-	UpdateById(c model.Food) error
+	UpdateById(c model.Food) (*model.Food, error)
 	DeleteById(id uint) error
 }
 
@@ -39,7 +39,7 @@ func (fr *FoodRepository) Create(f model.Food) (*model.Food, error) {
 			_ = tx.Rollback(context.Background())
 		}()
 		//* create category
-		if _, err := tx.Exec(context.Background(), "INSERT INTO category (id, name) VALUES ($1, $2)", f.Category.Id, f.Category.Name); err != nil {
+		if _, err := tx.Exec(context.Background(), "INSERT INTO category (id, name, restaurant_id) VALUES ($1, $2, $3)", f.Category.Id, f.Category.Name, f.Category.RestaurantId); err != nil {
 			return nil, err
 		}
 		//* create food
@@ -75,7 +75,7 @@ func (fr *FoodRepository) GetById(restaurantId uint, id uint) (*model.Food, erro
 	var f model.Food
 	var c model.Category
 	row := fr.pool.QueryRow(context.Background(), query, restaurantId, id)
-	if err := row.Scan(&f.Id, &f.Name, &f.Description, &f.CategoryId, &f.Price, &f.InStock, &f.CreatedAt, &f.Image, &f.RestaurantId, &c.Id, &c.Name); err != nil {
+	if err := row.Scan(&f.Id, &f.Name, &f.Description, &f.CategoryId, &f.Price, &f.InStock, &f.CreatedAt, &f.Image, &f.RestaurantId, &c.Id, &c.Name, &c.RestaurantId); err != nil {
 		return nil, err
 	}
 	f.Category = c
@@ -92,7 +92,7 @@ func (fr *FoodRepository) GetAll(id uint) ([]model.Food, error) {
 		return nil, err
 	} else {
 		for rows.Next() {
-			if err := rows.Scan(&f.Id, &f.Name, &f.Description, &f.CategoryId, &f.Price, &f.InStock, &f.CreatedAt, &f.Image, &f.RestaurantId, &c.Id, &c.Name); err != nil {
+			if err := rows.Scan(&f.Id, &f.Name, &f.Description, &f.CategoryId, &f.Price, &f.InStock, &f.CreatedAt, &f.Image, &f.RestaurantId, &c.Id, &c.Name, &c.RestaurantId); err != nil {
 				return nil, err
 			}
 			f.Category = c
@@ -105,7 +105,7 @@ func (fr *FoodRepository) GetAll(id uint) ([]model.Food, error) {
 }
 
 // * update
-func (fr *FoodRepository) UpdateById(f model.Food) error {
+func (fr *FoodRepository) UpdateById(f model.Food) (*model.Food, error) {
 	query := "UPDATE food " +
 		"SET " +
 		"name = $1, " +
@@ -114,11 +114,13 @@ func (fr *FoodRepository) UpdateById(f model.Food) error {
 		"price = $4, " +
 		"in_stock = $5, " +
 		"image = $6 " +
-		"WHERE id = $7"
-	if _, err := fr.pool.Exec(context.Background(), query, f.Name, f.CategoryId, f.Description, f.Price, f.InStock, f.Image, f.Id); err != nil {
-		return err
+		"WHERE id = $7 " +
+		"RETURNING *"
+	row := fr.pool.QueryRow(context.Background(), query, f.Name, f.CategoryId, f.Description, f.Price, f.InStock, f.Image, f.Id)
+	if err := row.Scan(&f.Id, &f.Name, &f.Description, &f.CategoryId, &f.Price, &f.InStock, &f.CreatedAt, &f.Image, &f.RestaurantId); err != nil {
+		return nil, err
 	}
-	return nil
+	return &f, nil
 }
 func (fr *FoodRepository) DeleteById(id uint) error {
 	query := "DELETE FROM food WHERE id = $1"

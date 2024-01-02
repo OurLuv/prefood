@@ -34,6 +34,23 @@ func TestHandler__CreateFood(t *testing.T) {
 			},
 			ExpectedStatusCode: 200,
 		},
+		{
+			name: "OK 2",
+			inputBody: `"name":        "Banan Cake",
+			"category_id": 4,
+			"description": "Fresh and nice banan cake",
+			"price":       299"`,
+			inputFood: model.Food{
+				Name:        "Banan Cake",
+				CategoryId:  4,
+				Description: "Fresh and nice banan cake",
+				Price:       299,
+			},
+			mockBehavior: func(s *mock_service.MockFoodService, data model.Food) {
+				s.EXPECT().Create(data).Return(&model.Food{Name: "Banan Cake", Description: "Fresh and nice banan cake", Price: 299, Image: ".jpg"}, nil)
+			},
+			ExpectedStatusCode: 200,
+		},
 	}
 
 	for _, tc := range testCases {
@@ -45,7 +62,7 @@ func TestHandler__CreateFood(t *testing.T) {
 			s := mock_service.NewMockFoodService(c)
 			tc.mockBehavior(s, tc.inputFood)
 			services := service.Service{
-				FoodService: s,
+				//FoodService: s,
 			}
 			handler := NewHandler(services, setupLogger())
 
@@ -66,11 +83,11 @@ func TestHandler__CreateFood(t *testing.T) {
 			w.Close()
 			// router
 			r := mux.NewRouter()
-			r.HandleFunc("/restaurants/{restaurant_id}/menu/add", handler.CreateFood).Methods("POST")
+			r.HandleFunc("/restaurants/{restaurant_id}/menu", handler.CreateFood).Methods("POST")
 
 			// sending request
 			rr := httptest.NewRecorder()
-			req := httptest.NewRequest("POST", "/restaurants/{restaurant_id}/menu/add", &buf)
+			req := httptest.NewRequest("POST", "/restaurants/{restaurant_id}/menu", &buf)
 			req.Header.Set("Content-Type", w.FormDataContentType())
 			newCtx := context.WithValue(req.Context(), "restaurant", &model.Restaurant{Id: 1})
 

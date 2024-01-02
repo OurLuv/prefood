@@ -11,7 +11,7 @@ type FoodService interface {
 	Create(c model.Food) (*model.Food, error)
 	GetById(restaurantId uint, id uint) (*model.Food, error)
 	GetAll(id uint) ([]model.Food, error)
-	UpdateById(c model.Food) error
+	UpdateById(c model.Food) (*model.Food, error)
 	DeleteById(id uint) error
 }
 

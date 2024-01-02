@@ -1,5 +1,16 @@
 basePath: /
 definitions:
+  handler.FoodResponse:
+    properties:
+      food:
+        $ref: '#/definitions/model.Food'
+      menu:
+        items:
+          $ref: '#/definitions/model.Food'
+        type: array
+      response:
+        $ref: '#/definitions/handler.Response'
+    type: object
   handler.Response:
     properties:
       data: {}
@@ -68,6 +79,34 @@ definitions:
         type: integer
     required:
     - name
+    type: object
+  model.Food:
+    properties:
+      category:
+        $ref: '#/definitions/model.Category'
+      category-id:
+        type: integer
+      description:
+        type: string
+      id:
+        type: integer
+      image:
+        type: string
+      in_stock:
+        type: boolean
+      name:
+        maxLength: 255
+        type: string
+      price:
+        type: integer
+      restaurant_id:
+        type: integer
+      time:
+        type: string
+    required:
+    - image
+    - name
+    - price
     type: object
   model.Restaurant:
     properties:
@@ -437,6 +476,96 @@ paths:
       summary: UpdateCategory
       tags:
       - Category
+  /restaurants/{restaurant_id}/menu:
+    get:
+      description: get food
+      operationId: get-food
+      parameters:
+      - description: restaurant id
+        in: path
+        name: restaurant_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.FoodResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.Response'
+      summary: GetFood
+      tags:
+      - Menu
+    post:
+      consumes:
+      - multipart/form-data
+      description: create food
+      operationId: create-food
+      parameters:
+      - description: restaurant id
+        in: path
+        name: restaurant_id
+        required: true
+        type: integer
+      - description: food image
+        in: formData
+        name: img
+        required: true
+        type: file
+      - description: food info
+        in: formData
+        name: input
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.FoodResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: CreateFood
+      tags:
+      - Menu
+  /restaurants/{restaurant_id}/menu/{id}:
+    get:
+      description: get food by id
+      operationId: get-food-by-id
+      parameters:
+      - description: restaurant id
+        in: path
+        name: restaurant_id
+        required: true
+        type: integer
+      - description: food id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.FoodResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.Response'
+      summary: GetFoodById
+      tags:
+      - Menu
   /restaurants/{restaurant_id}/openclose:
     post:
       description: open or close restaurant

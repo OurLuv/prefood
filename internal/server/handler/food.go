@@ -20,6 +20,15 @@ type FoodResponse struct {
 }
 
 // * Get all
+// @Summary GetFood
+// @Tags Menu
+// @Description get food
+// @ID get-food
+// @Param restaurant_id path int true "restaurant id"
+// @Produce json
+// @Success 200 {object} FoodResponse
+// @Failure default {object} Response
+// @Router /restaurants/{restaurant_id}/menu [get]
 func (h *Handler) GetAllFood(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	//getting data from url
@@ -36,17 +45,26 @@ func (h *Handler) GetAllFood(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_ = food
 	// sending response
-	// resp := FoodResponse{
-	// 	Response: Response{Success: true},
-	// 	Menu:     food,
-	// }
-	// json.NewEncoder(w).Encode(resp)
+	resp := FoodResponse{
+		Response: Response{Status: 1},
+		Menu:     food,
+	}
+	json.NewEncoder(w).Encode(resp)
 
 }
 
 // * Get food by id
+// @Summary GetFoodById
+// @Tags Menu
+// @Description get food by id
+// @ID get-food-by-id
+// @Param restaurant_id path int true "restaurant id"
+// @Param id path int true "food id"
+// @Produce json
+// @Success 200 {object} FoodResponse
+// @Failure default {object} Response
+// @Router /restaurants/{restaurant_id}/menu/{id} [get]
 func (h *Handler) GetFoodById(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	//getting data from url
@@ -66,16 +84,28 @@ func (h *Handler) GetFoodById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_ = food
 	// sending response
-	// resp := FoodResponse{
-	// 	Response: Response{Success: true},
-	// 	Food:     food,
-	// }
-	// json.NewEncoder(w).Encode(resp)
+	resp := FoodResponse{
+		Response: Response{Status: 1},
+		Food:     food,
+	}
+	json.NewEncoder(w).Encode(resp)
 }
 
 // * Create food
+// @Summary CreateFood
+// @Security ApiKeyAuth
+// @Tags Menu
+// @Description create food
+// @ID create-food
+// @Param restaurant_id path int true "restaurant id"
+// @Accept mpfd
+// @Produce json
+// @Param image formData file true "food image"
+// @Param food formData string true "food info"
+// @Success 200 {object} FoodResponse
+// @Failure default {object} Response
+// @Router /restaurants/{restaurant_id}/menu [post]
 func (h *Handler) CreateFood(w http.ResponseWriter, r *http.Request) {
 	var food model.Food
 	var err error
@@ -155,27 +185,64 @@ func (h *Handler) CreateFood(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// sending response
-	// resp := FoodResponse{
-	// 	Response: Response{Success: true, Message: "Row is added to database"},
-	// 	Food:     f,
-	// }
-	// json.NewEncoder(w).Encode(resp)
+	resp := FoodResponse{
+		Response: Response{Status: 1, Message: "Row is added to database"},
+		Food:     f,
+	}
+	json.NewEncoder(w).Encode(resp)
 }
 
 // * Update
+// @Summary UpdateFood
+// @Security ApiKeyAuth
+// @Tags Menu
+// @Description update food
+// @ID update-food
+// @Param restaurant_id path int true "restaurant id"
+// @Accept mpfd
+// @Produce json
+// @Param image formData file true "food image"
+// @Param food formData string true "food info"
+// @Success 200 {object} FoodResponse
+// @Failure default {object} Response
+// @Router /restaurants/{restaurant_id}/menu [post]
 func (h *Handler) UpdateFood(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var food model.Food
+	var err error
+
+	err = r.ParseMultipartForm(10 << 20)
+	if err != nil {
+		h.logger.Error("can't parse form", err)
+		SendError(w, "Bad request", http.StatusBadRequest)
+		return
+	}
+
 	// getting data from request
-	if err := json.NewDecoder(r.Body).Decode(&food); err != nil {
+	jsonData := r.FormValue("food")
+	if err := json.Unmarshal([]byte(jsonData), &food); err != nil {
 		h.logger.Error("can't get data from request", err)
 		SendError(w, "There is no data", http.StatusBadRequest)
 		return
 	}
-	FId := mux.Vars(r)["id"]
-	u64, _ := strconv.ParseUint(FId, 10, 32)
-	id := uint(u64)
-	food.Id = id
+	file, header, err := r.FormFile("image")
+	if err != nil {
+		h.logger.Error("can't upload image", err)
+		SendError(w, "Error with uploading an image", http.StatusBadRequest)
+		return
+	}
+	imgName := strings.Split(header.Filename, ".")
+	imgType := imgName[len(imgName)-1]
+	food.Image = imgType
+
+	// setting restaurant id from context
+	restaurant, ok := r.Context().Value("restaurant").(*model.Restaurant)
+	if !ok {
+		h.logger.Error("Can't get restaurant from context")
+		SendError(w, "Can't get a restauarant", http.StatusInternalServerError)
+		return
+	}
+	food.RestaurantId = restaurant.Id
 
 	// validatation
 	if err := validator.New().Struct(food); err != nil {
@@ -184,15 +251,44 @@ func (h *Handler) UpdateFood(w http.ResponseWriter, r *http.Request) {
 		SendRespError(w, resp, 400)
 		return
 	}
+	if food.Image != "jpg" && food.Image != "png" && food.Image != "jpeg" {
+		SendError(w, "Image has to be jpg/jpeg or png", http.StatusBadRequest)
+		return
+	}
 
 	// updating food
-	if err := h.service.FoodService.UpdateById(food); err != nil {
+	f, err := h.service.FoodService.UpdateById(food)
+	if err != nil {
 		h.logger.Error("can't update food", err)
 		SendError(w, "Internal error", http.StatusInternalServerError)
 		return
 	}
-	// resp := Response{Success: true, Message: "Item is updated"}
-	// json.NewEncoder(w).Encode(resp)
+	//downloading image on server
+	fileContent, err := io.ReadAll(file)
+	if err != nil {
+		h.logger.Error("can't read a file", err)
+		SendError(w, "Internal error", http.StatusInternalServerError)
+		return
+	}
+	newFile, err := os.Create("static/images/" + f.Image)
+	if err != nil {
+		h.logger.Error("can't create a file", err)
+		SendError(w, "Internal error", http.StatusInternalServerError)
+		return
+	}
+	defer newFile.Close()
+
+	_, err = newFile.Write(fileContent)
+	if err != nil {
+		h.logger.Error("can't add a content to the file", err)
+		SendError(w, "Internal error", http.StatusInternalServerError)
+		return
+	}
+	resp := Response{
+		Status:  1,
+		Message: "Item is updated",
+	}
+	json.NewEncoder(w).Encode(resp)
 }
 
 // * Delete

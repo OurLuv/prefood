@@ -18,7 +18,7 @@ func (fs *FoodServiceImpl) GetById(restaurantId uint, id uint) (*model.Food, err
 func (fs *FoodServiceImpl) GetAll(id uint) ([]model.Food, error) {
 	return fs.repo.GetAll(id)
 }
-func (fs *FoodServiceImpl) UpdateById(c model.Food) error {
+func (fs *FoodServiceImpl) UpdateById(c model.Food) (*model.Food, error) {
 	return fs.repo.UpdateById(c)
 }
 func (fs *FoodServiceImpl) DeleteById(id uint) error {
