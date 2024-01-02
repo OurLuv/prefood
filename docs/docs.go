@@ -529,6 +529,62 @@ const docTemplate = `{
                     }
                 }
             },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "update food",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Menu"
+                ],
+                "summary": "UpdateFood",
+                "operationId": "update-food",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "restaurant id",
+                        "name": "restaurant_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "food image",
+                        "name": "image",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "food info",
+                        "name": "food",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.FoodResponse"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/handler.Response"
+                        }
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {
@@ -558,14 +614,14 @@ const docTemplate = `{
                     {
                         "type": "file",
                         "description": "food image",
-                        "name": "img",
+                        "name": "image",
                         "in": "formData",
                         "required": true
                     },
                     {
                         "type": "string",
                         "description": "food info",
-                        "name": "input",
+                        "name": "food",
                         "in": "formData",
                         "required": true
                     }
@@ -670,6 +726,197 @@ const docTemplate = `{
                 }
             }
         },
+        "/restaurants/{restaurant_id}/orders": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get all orders",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Order"
+                ],
+                "summary": "GetOrders",
+                "operationId": "get-order",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "restaurant id",
+                        "name": "restaurant_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ResponseOrder"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/handler.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "create order",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Order"
+                ],
+                "summary": "CreateOrder",
+                "operationId": "create-order",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "restaurant id",
+                        "name": "restaurant_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "order info",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.CreateOrderRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ResponseOrder"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/handler.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/restaurants/{restaurant_id}/orders/{order_id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get order by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Order"
+                ],
+                "summary": "GetOrderById",
+                "operationId": "get-order-by-id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "restaurant id",
+                        "name": "restaurant_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "order id",
+                        "name": "order_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ResponseOrder"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/handler.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "change order status (IN_PROCCESS/READY/RECIEVED)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Order"
+                ],
+                "summary": "ChangeOrderStatus",
+                "operationId": "change-order-status",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "restaurant id",
+                        "name": "restaurant_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "order info",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.OrderStatus"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.Response"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/handler.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/signup": {
             "post": {
                 "description": "create account",
@@ -724,6 +971,14 @@ const docTemplate = `{
                 }
             }
         },
+        "handler.OrderStatus": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
         "handler.Response": {
             "type": "object",
             "properties": {
@@ -759,6 +1014,23 @@ const docTemplate = `{
             "properties": {
                 "id": {
                     "type": "integer"
+                },
+                "response": {
+                    "$ref": "#/definitions/handler.Response"
+                }
+            }
+        },
+        "handler.ResponseOrder": {
+            "type": "object",
+            "properties": {
+                "order": {
+                    "$ref": "#/definitions/model.Order"
+                },
+                "orders": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Order"
+                    }
                 },
                 "response": {
                     "$ref": "#/definitions/handler.Response"
@@ -828,6 +1100,32 @@ const docTemplate = `{
                 }
             }
         },
+        "model.CreateOrderRequest": {
+            "type": "object",
+            "properties": {
+                "additive": {
+                    "type": "string"
+                },
+                "channel": {
+                    "type": "string"
+                },
+                "discount": {
+                    "type": "string"
+                },
+                "food_order": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.FoodOrder"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                }
+            }
+        },
         "model.Food": {
             "type": "object",
             "required": [
@@ -866,6 +1164,67 @@ const docTemplate = `{
                 },
                 "time": {
                     "type": "string"
+                }
+            }
+        },
+        "model.FoodOrder": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "quantity": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.Order": {
+            "type": "object",
+            "properties": {
+                "additive": {
+                    "type": "string"
+                },
+                "arrive": {
+                    "type": "string"
+                },
+                "channel": {
+                    "type": "string"
+                },
+                "discount": {
+                    "type": "string"
+                },
+                "food": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Food"
+                    }
+                },
+                "food_order": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.FoodOrder"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "ordered": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "restaurant_id": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "total": {
+                    "type": "integer"
                 }
             }
         },

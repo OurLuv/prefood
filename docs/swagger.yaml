@@ -11,6 +11,11 @@ definitions:
       response:
         $ref: '#/definitions/handler.Response'
     type: object
+  handler.OrderStatus:
+    properties:
+      status:
+        type: string
+    type: object
   handler.Response:
     properties:
       data: {}
@@ -35,6 +40,17 @@ definitions:
     properties:
       id:
         type: integer
+      response:
+        $ref: '#/definitions/handler.Response'
+    type: object
+  handler.ResponseOrder:
+    properties:
+      order:
+        $ref: '#/definitions/model.Order'
+      orders:
+        items:
+          $ref: '#/definitions/model.Order'
+        type: array
       response:
         $ref: '#/definitions/handler.Response'
     type: object
@@ -80,6 +96,23 @@ definitions:
     required:
     - name
     type: object
+  model.CreateOrderRequest:
+    properties:
+      additive:
+        type: string
+      channel:
+        type: string
+      discount:
+        type: string
+      food_order:
+        items:
+          $ref: '#/definitions/model.FoodOrder'
+        type: array
+      name:
+        type: string
+      phone:
+        type: string
+    type: object
   model.Food:
     properties:
       category:
@@ -107,6 +140,46 @@ definitions:
     - image
     - name
     - price
+    type: object
+  model.FoodOrder:
+    properties:
+      id:
+        type: integer
+      quantity:
+        type: integer
+    type: object
+  model.Order:
+    properties:
+      additive:
+        type: string
+      arrive:
+        type: string
+      channel:
+        type: string
+      discount:
+        type: string
+      food:
+        items:
+          $ref: '#/definitions/model.Food'
+        type: array
+      food_order:
+        items:
+          $ref: '#/definitions/model.FoodOrder'
+        type: array
+      id:
+        type: integer
+      name:
+        type: string
+      ordered:
+        type: string
+      phone:
+        type: string
+      restaurant_id:
+        type: integer
+      status:
+        type: string
+      total:
+        type: integer
     type: object
   model.Restaurant:
     properties:
@@ -513,12 +586,12 @@ paths:
         type: integer
       - description: food image
         in: formData
-        name: img
+        name: image
         required: true
         type: file
       - description: food info
         in: formData
-        name: input
+        name: food
         required: true
         type: string
       produces:
@@ -535,6 +608,43 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: CreateFood
+      tags:
+      - Menu
+    put:
+      consumes:
+      - multipart/form-data
+      description: update food
+      operationId: update-food
+      parameters:
+      - description: restaurant id
+        in: path
+        name: restaurant_id
+        required: true
+        type: integer
+      - description: food image
+        in: formData
+        name: image
+        required: true
+        type: file
+      - description: food info
+        in: formData
+        name: food
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.FoodResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: UpdateFood
       tags:
       - Menu
   /restaurants/{restaurant_id}/menu/{id}:
@@ -592,6 +702,129 @@ paths:
       summary: OpenCloseRestaurant
       tags:
       - Restaurant
+  /restaurants/{restaurant_id}/orders:
+    get:
+      description: get all orders
+      operationId: get-order
+      parameters:
+      - description: restaurant id
+        in: path
+        name: restaurant_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.ResponseOrder'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: GetOrders
+      tags:
+      - Order
+    post:
+      consumes:
+      - application/json
+      description: create order
+      operationId: create-order
+      parameters:
+      - description: restaurant id
+        in: path
+        name: restaurant_id
+        required: true
+        type: integer
+      - description: order info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateOrderRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.ResponseOrder'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: CreateOrder
+      tags:
+      - Order
+  /restaurants/{restaurant_id}/orders/{order_id}:
+    get:
+      description: get order by id
+      operationId: get-order-by-id
+      parameters:
+      - description: restaurant id
+        in: path
+        name: restaurant_id
+        required: true
+        type: integer
+      - description: order id
+        in: path
+        name: order_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.ResponseOrder'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: GetOrderById
+      tags:
+      - Order
+    post:
+      consumes:
+      - application/json
+      description: change order status (IN_PROCCESS/READY/RECIEVED)
+      operationId: change-order-status
+      parameters:
+      - description: restaurant id
+        in: path
+        name: restaurant_id
+        required: true
+        type: integer
+      - description: order info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/handler.OrderStatus'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.Response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: ChangeOrderStatus
+      tags:
+      - Order
   /signup:
     post:
       consumes:

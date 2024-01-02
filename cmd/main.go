@@ -70,7 +70,7 @@ func main() {
 	}
 	log.Info("server is started")
 	if err := srv.ListenAndServe(); err != nil {
-		log.Error("failed to start a server")
+		log.Error("failed to start a server", err)
 	}
 }
 

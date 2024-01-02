@@ -60,9 +60,8 @@ func (h *Handler) InitRoutes() *mux.Router {
 	r.HandleFunc("/restaurants/{restaurant_id}", h.restaurantAccess(h.UpdateRestaurant)).Methods("PUT")
 
 	//*Food
-
+	// todo: fix a bug with categories
 	r.HandleFunc("/restaurants/{restaurant_id}/menu", h.GetAllFood).Methods("GET")
-	// todo: if food doesn't exist - 404
 	r.HandleFunc("/restaurants/{restaurant_id}/menu/{id}", h.GetFoodById).Methods("GET")
 	r.HandleFunc("/restaurants/{restaurant_id}/menu", h.restaurantAccess(h.CreateFood)).Methods("POST")
 	// todo: if 0 rows werer Update - particular message

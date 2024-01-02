@@ -82,13 +82,20 @@ func (h *Handler) restaurantAccess(next http.HandlerFunc) http.HandlerFunc {
 func (h *Handler) orderAccess(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		c, err := r.Cookie("token")
-		if err != nil {
-			h.logger.Error("can't get cookie: ", err)
+		header := r.Header.Get("Authorization")
+		if header == "" {
+			h.logger.Error("verifying error", "empty auth header")
 			SendError(w, "Not authorized", http.StatusUnauthorized)
 			return
 		}
-		token := c.Value
+		headerParts := strings.Split(header, " ")
+		if len(headerParts) != 2 {
+			h.logger.Error("verifying error", "invalid auth header")
+			SendError(w, "Not authorized", http.StatusUnauthorized)
+			return
+		}
+
+		token := headerParts[1]
 		client_id, err := middleware.VerifyToken(token)
 		if err != nil {
 			h.logger.Error("verifying error", err)

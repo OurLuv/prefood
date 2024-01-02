@@ -48,7 +48,7 @@ func TestUpdateFood(t *testing.T) {
 		CreatedAt:   time.Now(),
 		Image:       "apple.jpg",
 	}
-	if err := fr.UpdateById(food); err != nil {
+	if _, err := fr.UpdateById(food); err != nil {
 		t.Errorf("can't create a model of Food: %v", err)
 	}
 

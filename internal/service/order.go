@@ -6,7 +6,7 @@ import (
 )
 
 type OrderService interface {
-	Create(order model.Order) error
+	Create(order model.Order) (*model.Order, error)
 	GetAll(restaurant_id uint) ([]model.Order, error)
 	GetById(restaurantId uint, order_Id uint) (*model.Order, error)
 	Delete(id uint) error
@@ -17,7 +17,7 @@ type OrderServiceImpl struct {
 	repo postgres.OrderStorage
 }
 
-func (os *OrderServiceImpl) Create(order model.Order) error {
+func (os *OrderServiceImpl) Create(order model.Order) (*model.Order, error) {
 	return os.repo.Create(order)
 }
 

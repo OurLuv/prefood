@@ -205,7 +205,7 @@ func (h *Handler) CreateFood(w http.ResponseWriter, r *http.Request) {
 // @Param food formData string true "food info"
 // @Success 200 {object} FoodResponse
 // @Failure default {object} Response
-// @Router /restaurants/{restaurant_id}/menu [post]
+// @Router /restaurants/{restaurant_id}/menu [put]
 func (h *Handler) UpdateFood(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var food model.Food
