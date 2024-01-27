@@ -1,7 +1,10 @@
 ## Project Description
-I have developed a REST API monolith using the Golang for my little pet project. With this API, you can easily manage data in your food ordering application. 
+I have developed a REST API monolith using the Golang. With this API, you can manage data in your food ordering application. 
 
-My Golang development serves as the foundation for next projects in food ordering. While it is just a pet project, the API ensures reliability and efficiency required for the smooth operation of your application.
+My Golang development serves as the foundation for next projects in food ordering. While it is just a pet project, the API ensures reliability and efficiency required for the smooth operation of an application.
+
+## Swagger Documentation
+Check out Swagger documentation [here](https://ourluv.github.io/#/) <-
 
 
 ## Used Technologies 
@@ -13,4 +16,10 @@ My Golang development serves as the foundation for next projects in food orderin
 
 
 ## Architecture
+![](https://raw.githubusercontent.com/OurLuv/prefood/master/static/architecture.drawio.png?token=GHSAT0AAAAAACNNM3DHTLLAPPVJP5UIHDNSZNU2ILA)
 
+
+##To launch the application
+```bash
+make build && make run
+```
