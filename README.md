@@ -19,7 +19,7 @@ Check out Swagger documentation [here](https://ourluv.github.io/#/) <-
 ![](https://raw.githubusercontent.com/OurLuv/prefood/master/static/architecture.drawio.png?token=GHSAT0AAAAAACNNM3DHTLLAPPVJP5UIHDNSZNU2ILA)
 
 
-##To launch the application
+## To launch the application
 ```bash
 make build && make run
 ```
