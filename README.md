@@ -15,10 +15,6 @@ Check out Swagger documentation [here](https://ourluv.github.io/#/) <-
 - Gomock - A mocking framework for Golang for generating mock objects for unit testing, enabling easier and more effective testing of your code.
 
 
-## Architecture
-![](https://raw.githubusercontent.com/OurLuv/prefood/master/static/architecture.drawio.png?token=GHSAT0AAAAAACNNM3DHTLLAPPVJP5UIHDNSZNU2ILA)
-
-
 ## To launch the application
 ```bash
 make build && make run
