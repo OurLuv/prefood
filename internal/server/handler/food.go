@@ -142,7 +142,9 @@ func (h *Handler) CreateFood(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	food.RestaurantId = restaurant.Id
-
+	if food.Category.Name == "" {
+		food.Category.Name = "Not Empty"
+	}
 	// validatation
 	if err := validator.New().Struct(food); err != nil {
 		h.logger.Error("validation err: ", err)

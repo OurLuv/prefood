@@ -188,6 +188,7 @@ func (h *Handler) DeleteOrderById(w http.ResponseWriter, r *http.Request) {
 // @Description change order status (IN_PROCCESS/READY/RECIEVED)
 // @ID change-order-status
 // @Param restaurant_id path int true "restaurant id"
+// @Param order_id path int true "order id"
 // @Accept json
 // @Produce json
 // @Param input body OrderStatus true "order info"

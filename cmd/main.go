@@ -43,7 +43,11 @@ func main() {
 	log.Info("Test info")
 
 	//* storage
-	pool, err := postgres.NewDB(cfg.StoragePath)
+	dbPath, exists := os.LookupEnv("DB_PATH")
+	if !exists {
+		log.Error("db path is not set: %s", dbPath)
+	}
+	pool, err := postgres.NewDB(dbPath)
 	if err != nil {
 		log.Error("failed to init storage", err)
 		os.Exit(1)
